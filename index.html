@@ -1,110 +1,603 @@
 <!DOCTYPE html>
 <html lang="it" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banca del Tempo - ACLI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: {} } };
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .zoom-active { transform: scale(1.6); cursor: zoom-out !important; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banca del Tempo - ACLI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@keyframes pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.7)}50%{box-shadow:0 0 0 12px rgba(245,158,11,0)}}
+.pulse-gold{animation:pulse-gold 2s infinite}
+.cal-day{transition:all .15s;cursor:pointer}.cal-day:not(.disabled):hover{transform:scale(1.08);box-shadow:0 0 0 3px rgba(59,130,246,.4)}
+.cal-day.selected{background:#2563eb!important;color:#fff!important}
+.cal-day.today{box-shadow:inset 0 0 0 2px #f59e0b}
+.cal-day.disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.cal-day.occupied{background:#fecaca!important;color:#991b1b!important;cursor:not-allowed}
+.zoom-2x{transform:scale(2);transform-origin:top left;cursor:zoom-out!important}
+.photo-circle{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #2563eb}
+</style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans flex flex-col min-h-screen transition-colors duration-200">
-    <header class="bg-blue-900 dark:bg-slate-950 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row flex-wrap justify-between items-center gap-4">
-            <button class="flex items-center space-x-3 cursor-pointer text-left" onclick="switchTab('landing')" aria-label="Torna alla home">
-                <div class="flex items-center gap-2">
-                    <img src="assets/logo.jpg" alt="Logo Banca del Tempo" class="w-12 h-12 rounded-lg object-contain bg-white p-1">
-                    <img src="assets/logo_acli.jpg" alt="Logo ACLI" class="h-12 w-auto rounded-lg object-contain bg-white px-2 py-1">
-                </div>
-                <span><strong class="text-xl tracking-tight block" data-i18n="header_title">Banca del Tempo</strong><small class="text-xs text-blue-200" data-i18n="header_sub">ACLI - Sezione Ceglie del Campo, Bari</small></span>
-            </button>
-            <nav class="flex space-x-1 sm:space-x-2 text-sm font-medium overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 items-center">
-                <button onclick="switchTab('landing')" class="nav-btn px-3 py-1.5 rounded-lg hover:bg-blue-800 transition" data-i18n="nav_about">Chi Siamo</button>
-                <button onclick="switchTab('catalogo')" class="nav-btn px-3 py-1.5 rounded-lg hover:bg-blue-800 transition" data-i18n="nav_cat">Docenti & Corsi</button>
-                <button onclick="switchTab('dashboard')" class="nav-btn px-3 py-1.5 rounded-lg hover:bg-blue-800 transition" data-i18n="nav_dash">Dashboard Ore</button>
-                <button onclick="switchTab('donazioni')" class="nav-btn px-3 py-1.5 rounded-lg hover:bg-blue-800 transition text-amber-300" data-i18n="nav_don">Donazioni</button>
-                <button onclick="switchTab('master')" class="nav-btn bg-amber-500 text-blue-950 px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-400 transition ml-2" data-i18n="nav_master">Master App</button>
-                <div class="flex items-center space-x-3 ml-4 border-l border-white/20 pl-4">
-                    <button onclick="toggleDarkMode()" class="text-white hover:text-amber-400 text-lg transition" aria-label="Cambia tema"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
-                    <select id="langSelect" onchange="changeLanguage()" class="bg-blue-800 text-white border-none rounded px-2 py-1 text-xs outline-none cursor-pointer" aria-label="Lingua">
-                        <option value="it">IT</option><option value="en">EN</option><option value="de">DE</option>
-                    </select>
-                </div>
-            </nav>
-        </div>
-    </header>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans flex flex-col min-h-screen">
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
-        <section id="landing" class="tab-content active space-y-8">
-            <div class="bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-slate-800 dark:to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-                <div class="space-y-4 max-w-2xl">
-                    <span class="bg-amber-500 text-blue-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider" data-i18n="hero_tag">Scambio Intergenerazionale</span>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight" data-i18n="hero_title">Colleghiamo la memoria e il futuro a Bari</h1>
-                    <p class="text-blue-100 dark:text-slate-300" data-i18n="hero_desc">La Banca del Tempo permette ai lavoratori in pensione di mettere a disposizione la propria esperienza lavorativa e umana per i giovani.</p>
-                    <div class="pt-2 flex flex-wrap gap-3">
-                        <button onclick="switchTab('catalogo')" class="bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-400 transition" data-i18n="hero_btn1">Esplora Insegnanti</button>
-                        <button onclick="switchTab('master')" class="bg-white/10 text-white border border-white/20 px-5 py-2.5 rounded-xl font-semibold hover:bg-white/20 transition" data-i18n="hero_btn2">Aderisci come Docente</button>
-                        <button onclick="openBlueprintModal()" class="bg-blue-600 border border-blue-400 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg flex items-center gap-2"><i class="fa-solid fa-sitemap"></i><span data-i18n="hero_btn_blueprint">Visualizza Blueprint</span></button>
-                    </div>
-                </div>
-                <div class="bg-white/10 p-6 rounded-2xl border border-white/10 text-center w-full md:w-auto min-w-[240px]">
-                    <div class="text-4xl font-extrabold text-amber-400">1.480</div><div class="text-xs uppercase tracking-wider text-blue-200 mt-1" data-i18n="stat_hours">Ore Erogate sul Territorio</div><hr class="my-3 border-white/20"><div class="text-sm font-semibold">ACLI Ceglie del Campo (Bari)</div>
-                </div>
-            </div>
-            <div class="w-full rounded-2xl overflow-hidden shadow-lg h-64 sm:h-96 relative border border-slate-200 dark:border-slate-700">
-                <img src="assets/community.jpg" alt="Community Banca del Tempo" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6 sm:p-8"><div><h2 class="text-white font-bold text-2xl sm:text-3xl" data-i18n="hero_img_title">Uniamo le generazioni</h2><p class="text-slate-200 mt-2" data-i18n="hero_img_caption">Costruiamo insieme una comunità basata sulla condivisione delle competenze, il dialogo e il supporto reciproco.</p></div></div>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6" id="values"></div>
-            <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700 space-y-6"><div class="text-center"><h2 class="text-2xl font-bold text-slate-900 dark:text-white" data-i18n="areas_title">Le Nostre Aree di Insegnamento</h2><p class="text-slate-500 dark:text-slate-400 text-sm mt-2" data-i18n="areas_sub">Scopri le discipline pratiche e teoriche offerte dai nostri docenti in pensione.</p></div><div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="areas"></div></div>
-        </section>
+<!-- HEADER -->
+<header class="bg-blue-900 dark:bg-slate-950 text-white shadow-lg sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-3 py-2 flex flex-col sm:flex-row flex-wrap justify-between items-center gap-2">
+  <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="go('landing')">
+    <img src="assets/logo.jpg" class="w-10 h-10 rounded-lg object-contain bg-white p-0.5">
+    <img src="assets/logo_acli.jpg" class="h-10 w-auto rounded-lg object-contain bg-white p-0.5">
+    <div class="ml-1"><h1 class="text-lg font-bold leading-tight">Banca del Tempo</h1><p class="text-[10px] text-blue-200">ACLI Ceglie del Campo, Bari</p></div>
+  </div>
+  <nav class="flex gap-1 text-xs font-medium overflow-x-auto w-full sm:w-auto items-center pb-1 sm:pb-0">
+    <button onclick="go('landing')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_about">Chi Siamo</button>
+    <button onclick="go('missione')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_mission">Missione</button>
+    <button onclick="go('docenti')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_cat">Docenti</button>
+    <button onclick="go('progetti')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_proj">Progetti</button>
+    <button onclick="go('prenota')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_book">Prenota</button>
+    <button onclick="go('dashboard')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap" data-i18n="nav_dash">Dashboard</button>
+    <button onclick="go('donazioni')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap text-amber-300" data-i18n="nav_don">Donazioni</button>
+    <button id="navR" onclick="go('registrazione')" class="px-2 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-bold transition whitespace-nowrap" data-i18n="nav_reg">Registrati</button>
+    <button id="navP" onclick="go('impostazioni')" class="px-2 py-1.5 rounded-lg hover:bg-blue-800 transition whitespace-nowrap text-emerald-300 hidden" data-i18n="nav_prof">Profilo</button>
+    <button onclick="go('master')" class="px-2 py-1.5 rounded-lg bg-amber-500 text-blue-950 font-semibold hover:bg-amber-400 transition ml-1 whitespace-nowrap" data-i18n="nav_admin">Admin</button>
+    <div class="flex items-center gap-2 ml-2 border-l border-white/20 pl-2 shrink-0">
+      <button onclick="tdk()" class="text-lg hover:text-amber-400 transition"><i class="fa-solid fa-moon" id="tIco"></i></button>
+      <select id="lS" onchange="sL()" class="bg-blue-800 dark:bg-slate-800 text-white border-none rounded px-1 py-1 text-[10px] outline-none cursor-pointer">
+        <option value="it">IT</option><option value="en">EN</option><option value="de">DE</option>
+      </select>
+    </div>
+  </nav>
+</div>
+</header>
 
-        <section id="catalogo" class="tab-content space-y-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 dark:border-slate-700 pb-4"><div><h2 class="text-2xl font-bold text-slate-900 dark:text-white" data-i18n="cat_title">Catalogo Docenti & Mentori</h2><p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="cat_desc">Esplora le biografie certificate ed effettua una prenotazione di ore.</p></div><select id="filterCategory" onchange="renderTeachers()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm dark:text-white"><option value="ALL">Tutte le Aree</option><option value="Pratica">Mestieri Pratici</option><option value="Teorica">Materie Teoriche</option></select></div><div id="teachersList" class="grid md:grid-cols-2 gap-6"></div></section>
+<main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
 
-        <section id="dashboard" class="tab-content space-y-6"><h2 class="text-2xl font-bold text-slate-900 dark:text-white" data-i18n="dash_title">Dashboard & Calcolatore Ore</h2><div class="grid md:grid-cols-3 gap-6"><div class="panel"><span data-i18n="dash_b1_t">Totale Ore Disponibili</span><strong class="text-blue-900 dark:text-blue-400">340 <small data-i18n="hours_word">Ore</small></strong></div><div class="panel"><span data-i18n="dash_b2_t">Il Tuo Saldo Tempo</span><strong class="text-emerald-600 dark:text-emerald-400" id="userHoursBalance">12 Ore</strong></div><div class="panel"><span data-i18n="dash_b3_t">Settore Più Richiesto</span><strong class="text-amber-600 dark:text-amber-400" data-i18n="dash_b3_v">Agricoltura</strong></div></div><div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6"><h3 class="font-bold text-lg mb-4" data-i18n="dash_table_title">Le Tue Prenotazioni Programmate</h3><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase text-xs"><tr><th class="p-3">Docente</th><th class="p-3">Materia/Mestiere</th><th class="p-3">Ore</th><th class="p-3">Stato</th></tr></thead><tbody id="bookingTableBody" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody></table></div></div></section>
+<!-- ===================== LANDING ===================== -->
+<section id="landing" class="tc on space-y-8">
+  <div class="bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-slate-800 dark:to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="space-y-4 max-w-2xl">
+      <span class="bg-amber-500 text-blue-950 text-xs font-bold px-3 py-1 rounded-full uppercase">Scambio Intergenerazionale</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">Colleghiamo la memoria e il futuro a Bari</h2>
+      <p class="text-blue-100">La Banca del Tempo permette ai pensionati di mettere a disposizione la propria esperienza per giovani, extracomunitari e tutta la comunit&agrave;.</p>
+      <div class="pt-2 flex flex-wrap gap-3">
+        <button onclick="go('registrazione')" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-emerald-500 transition shadow-lg" data-i18n="btn_reg">Registrati Ora</button>
+        <button onclick="go('docenti')" class="bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-400 transition" data-i18n="btn_doc">Esplora Docenti</button>
+        <button onclick="go('missione')" class="bg-white/10 backdrop-blur-md text-white border border-white/20 px-5 py-2.5 rounded-xl font-semibold hover:bg-white/20 transition" data-i18n="btn_miss">Scopri la Missione</button>
+        <button onclick="openBP()" class="pulse-gold bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-400 transition flex items-center gap-2"><i class="fa-solid fa-sitemap"></i> <span data-i18n="btn_bp">Blueprint</span></button>
+      </div>
+    </div>
+    <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 text-center min-w-[200px]">
+      <div class="text-4xl font-extrabold text-amber-400">1.480</div>
+      <div class="text-xs uppercase tracking-wider text-blue-200 mt-1">Ore Erogate</div>
+    </div>
+  </div>
+  <!-- IMMAGINE 1 -->
+  <div class="w-full rounded-2xl overflow-hidden shadow-lg h-64 sm:h-96 relative border border-slate-200 dark:border-slate-700">
+    <img src="assets/img1.jpg" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6 sm:p-8">
+      <div><h3 class="text-white font-bold text-2xl sm:text-3xl">Uniamo le generazioni</h3><p class="text-slate-200 text-sm sm:text-base mt-2">Condivisione, dialogo e supporto reciproco.</p></div>
+    </div>
+  </div>
+  <!-- ACLI CREDIT -->
+  <div class="flex flex-col sm:flex-row items-center gap-4 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+    <img src="assets/logo_acli.jpg" class="h-20 w-auto rounded-xl object-contain bg-white p-1 shadow">
+    <div class="text-center sm:text-left">
+      <h4 class="font-bold text-blue-900 dark:text-blue-400 text-lg">Associazioni Cristiane Lavoratori Italiani</h4>
+      <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Programma di inclusione sociale - Sede ACLI Ceglie del Campo, Bari.</p>
+      <p class="text-xs text-slate-400 mt-2 italic">Logo ACLI a cura di <strong>Luigi Giovannelli</strong></p>
+    </div>
+  </div>
+  <!-- VALORI -->
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2"><div class="text-blue-900 dark:text-blue-400 text-2xl"><i class="fa-solid fa-graduation-cap"></i></div><h3 class="font-bold text-lg dark:text-white">Materie Teoriche</h3><p class="text-sm text-slate-600 dark:text-slate-400">Matematica, Storia e materie scolastiche.</p></div>
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2"><div class="text-amber-600 dark:text-amber-400 text-2xl"><i class="fa-solid fa-hammer"></i></div><h3 class="font-bold text-lg dark:text-white">Mestieri Pratici</h3><p class="text-sm text-slate-600 dark:text-slate-400">Potatura, agricoltura, cucina, manutenzione.</p></div>
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2"><div class="text-emerald-600 dark:text-emerald-400 text-2xl"><i class="fa-solid fa-handshake"></i></div><h3 class="font-bold text-lg dark:text-white">Inclusione Sociale</h3><p class="text-sm text-slate-600 dark:text-slate-400">Aperta a tutti: pensionati, giovani, extracomunitari.</p></div>
+  </div>
+  <!-- AREE -->
+  <div class="pt-8 border-t border-slate-200 dark:border-slate-700 space-y-4">
+    <h3 class="text-2xl font-bold text-center dark:text-white">Aree di Insegnamento</h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div class="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-seedling"></i></div><h4 class="font-bold">Agricoltura</h4></div>
+      <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-slate-600 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-wrench"></i></div><h4 class="font-bold">Officina</h4></div>
+      <div class="bg-lime-50 dark:bg-lime-900/20 p-4 rounded-xl border border-lime-100 dark:border-lime-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-lime-600 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-scissors"></i></div><h4 class="font-bold">Potatura</h4></div>
+      <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-xl border border-orange-100 dark:border-orange-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-utensils"></i></div><h4 class="font-bold">Cucina</h4></div>
+      <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-mug-hot"></i></div><h4 class="font-bold">Bar</h4></div>
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-book-open"></i></div><h4 class="font-bold">Doposcuola</h4></div>
+      <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-music"></i></div><h4 class="font-bold">Musica</h4></div>
+      <div class="bg-rose-50 dark:bg-rose-900/20 p-4 rounded-xl border border-rose-100 dark:border-rose-800/50 flex flex-col items-center text-center hover:shadow-md transition"><div class="w-12 h-12 bg-rose-500 text-white rounded-full flex items-center justify-center text-xl mb-2"><i class="fa-solid fa-clapperboard"></i></div><h4 class="font-bold">Video Creazione</h4></div>
+    </div>
+  </div>
+</section>
 
-        <section id="donazioni" class="tab-content max-w-2xl mx-auto"><div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-center"><div class="text-amber-600 text-3xl mb-4"><i class="fa-solid fa-heart"></i></div><h2 class="text-2xl font-bold text-slate-900 dark:text-white" data-i18n="don_title">Sostieni la Banca del Tempo</h2><p class="text-sm text-slate-600 dark:text-slate-400 my-4" data-i18n="don_desc">La donazione economica è completamente libera, priva di massimali e NON obbligatoria.</p><form onsubmit="handleDonation(event)" class="space-y-4 text-left"><input type="number" min="1" placeholder="10" required class="w-full p-3 border rounded-xl dark:bg-slate-700 dark:border-slate-600"><input type="text" placeholder="Nome sostenitore (opzionale)" class="w-full p-3 border rounded-xl dark:bg-slate-700 dark:border-slate-600"><button class="w-full bg-amber-500 text-blue-950 font-bold py-3 rounded-xl hover:bg-amber-400" data-i18n="don_btn">Invia Donazione Volontaria</button></form></div></section>
+<!-- ===================== MISSIONE ===================== -->
+<section id="missione" class="tc space-y-8">
+  <div class="text-center max-w-3xl mx-auto space-y-3"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-full uppercase">Inclusione Sociale</span><h2 class="text-3xl font-extrabold dark:text-white">Lo Scopo del Nostro Programma</h2></div>
+  <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 border border-blue-100 dark:border-slate-700 space-y-5 text-slate-700 dark:text-slate-300 leading-relaxed">
+    <p>La <strong>Banca del Tempo ACLI</strong> &egrave; un programma di <strong>inclusione sociale</strong> ideato per <strong>reinserire attivamente nella comunit&agrave;</strong> i cittadini che hanno terminato il proprio percorso lavorativo e sono andati in pensione.</p>
+    <p>Molti pensionati possiedono competenze preziose acquisite in decenni di lavoro. La Banca del Tempo trasforma questa esperienza in una <strong>risorsa viva</strong> per il territorio, creando un ponte tra generazioni.</p>
+    <p>Il programma si rivolge ai <strong>giovani</strong> in cerca di orientamento, alle <strong>persone extracomunitarie</strong> di condizione economica non agiata che necessitano di competenze professionali, e a <strong>tutti i cittadini</strong> che desiderano imparare o insegnare.</p>
+    <p>La Banca del Tempo &egrave; <strong>aperta a tutti</strong>: italiani e stranieri, giovani e anziani, studenti e lavoratori. Nessuna barriera di et&agrave;, nazionalit&agrave; o condizione economica. L'unico requisito &egrave; la volont&agrave; di partecipare.</p>
+  </div>
+  <div class="grid sm:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm text-center border border-slate-100 dark:border-slate-700"><div class="text-3xl text-amber-500 mb-2"><i class="fa-solid fa-user-clock"></i></div><h4 class="font-bold dark:text-white">Pensionati</h4><p class="text-xs text-slate-500 mt-1">Tornano attivi trasmettendo le proprie competenze</p></div>
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm text-center border border-slate-100 dark:border-slate-700"><div class="text-3xl text-blue-500 mb-2"><i class="fa-solid fa-graduation-cap"></i></div><h4 class="font-bold dark:text-white">Giovani</h4><p class="text-xs text-slate-500 mt-1">Imparano mestieri e ricevono supporto scolastico</p></div>
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm text-center border border-slate-100 dark:border-slate-700"><div class="text-3xl text-emerald-500 mb-2"><i class="fa-solid fa-earth-americas"></i></div><h4 class="font-bold dark:text-white">Extracomunitari</h4><p class="text-xs text-slate-500 mt-1">Acquisiscono competenze per l'inserimento lavorativo</p></div>
+  </div>
+  <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
+    <h3 class="text-xl font-bold dark:text-white mb-4">Come Funziona</h3>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="flex gap-3"><div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</div><div><h4 class="font-semibold">Iscrizione Gratuita</h4><p class="text-sm text-slate-500">Compila il form con i tuoi dati anagrafici.</p></div></div>
+      <div class="flex gap-3"><div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</div><div><h4 class="font-semibold">Scegli un Docente</h4><p class="text-sm text-slate-500">Sfoglia il catalogo e trova la competenza.</p></div></div>
+      <div class="flex gap-3"><div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm shrink-0">3</div><div><h4 class="font-semibold">Prenota sul Calendario</h4><p class="text-sm text-slate-500">Seleziona giorno e fascia oraria.</p></div></div>
+      <div class="flex gap-3"><div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm shrink-0">4</div><div><h4 class="font-semibold">Impara e Cresci</h4><p class="text-sm text-slate-500">Partecipa alla lezione e accumula ore.</p></div></div>
+    </div>
+  </div>
+</section>
 
-        <section id="master" class="tab-content max-w-2xl mx-auto"><div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md"><h2 class="text-xl font-bold text-blue-900 dark:text-blue-400 mb-6" data-i18n="master_title">ACLI Master App - Back-End</h2><div id="masterAuthBlock" class="space-y-4"><p class="text-sm text-slate-600 dark:text-slate-400" data-i18n="master_desc">Inserisci il Codice di Identificazione Master per abilitare l'inserimento di nuovi docenti.</p><input type="password" id="masterCodeInput" placeholder="Codice master" class="w-full p-3 border rounded-xl dark:bg-slate-700 dark:border-slate-600"><button onclick="authenticateMaster()" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl" data-i18n="master_btn_auth">Autentica Operatore ACLI</button></div><div id="masterPanel" class="hidden space-y-4"><p class="text-emerald-600 font-semibold" data-i18n="master_auth_ok">Operatore Autenticato</p><form onsubmit="saveTeacher(event)" class="space-y-3"><input id="tName" required placeholder="Nome e cognome" class="w-full p-2.5 border rounded-lg dark:bg-slate-700"><select id="tCategory" class="w-full p-2.5 border rounded-lg dark:bg-slate-700"><option value="Pratica">Pratica</option><option value="Teorica">Teorica</option></select><input id="tSkill" required placeholder="Specializzazione" class="w-full p-2.5 border rounded-lg dark:bg-slate-700"><textarea id="tBio" required placeholder="Biografia" class="w-full p-2.5 border rounded-lg dark:bg-slate-700"></textarea><button class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl" data-i18n="master_f_btn">+ Salva</button></form></div></div></section>
-    </main>
+<!-- ===================== REGISTRAZIONE ===================== -->
+<section id="registrazione" class="tc max-w-3xl mx-auto space-y-6">
+  <div class="text-center"><h2 class="text-2xl font-bold dark:text-white">Registrazione alla Banca del Tempo</h2><p class="text-sm text-slate-500">Compila tutti i campi per iscriverti gratuitamente.</p></div>
+  <div id="regOk" class="hidden bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 text-center space-y-3">
+    <i class="fa-solid fa-circle-check text-emerald-500 text-4xl"></i>
+    <h3 class="font-bold text-emerald-800 dark:text-emerald-400 text-lg">Sei gi&agrave; registrato!</h3>
+    <p class="text-sm text-slate-600 dark:text-slate-400" id="regOkN"></p>
+    <button onclick="go('impostazioni')" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-800 transition">Vai al Profilo</button>
+  </div>
+  <form id="regF" class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+    <div class="flex flex-col items-center gap-3">
+      <img id="phP" class="photo-circle hidden">
+      <div id="phH" class="w-28 h-28 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-3xl text-slate-400"><i class="fa-solid fa-camera"></i></div>
+      <label class="cursor-pointer bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-bold px-4 py-2 rounded-xl hover:bg-blue-200 transition"><i class="fa-solid fa-upload mr-1"></i> Carica Foto<input type="file" id="phI" accept="image/*" class="hidden"></label>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome *</label><input type="text" id="rNome" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Cognome *</label><input type="text" id="rCog" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Data di Nascita *</label><input type="date" id="rDN" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Luogo di Nascita *</label><input type="text" id="rLN" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sesso *</label><select id="rSesso" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"><option value="">--</option><option value="M">Maschile</option><option value="F">Femminile</option></select></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Codice Fiscale *</label><input type="text" id="rCF" required maxlength="16" placeholder="RSSMRA80A01F703X" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm uppercase outline-none focus:ring-2 focus:ring-blue-500"></div>
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Indirizzo Completo *</label>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <input type="text" id="rVia" required placeholder="Via/Piazza" class="col-span-2 w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="rCiv" required placeholder="N." class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="rCap" required placeholder="CAP" maxlength="5" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="rCom" required placeholder="Comune" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <select id="rProv" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"><option value="">Prov.</option><option value="BA">BA</option><option value="BR">BR</option><option value="BT">BT</option><option value="FG">FG</option><option value="LE">LE</option><option value="TA">TA</option><option value="Altro">Altro</option></select>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefono *</label><input type="tel" id="rTel" required placeholder="333 1234567" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+      <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email *</label><input type="email" id="rEmail" required placeholder="nome@email.it" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+    </div>
+    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria di Iscrizione *</label><select id="rCat" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"><option value="">--</option><option value="giovane">Giovane</option><option value="pensionato">Pensionato / Docente</option><option value="extracomunitario">Cittadino Extracomunitario</option><option value="altro">Altro</option></select></div>
+    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Competenze di Interesse</label><input type="text" id="rComp" placeholder="es. Agricoltura, Musica, Video Creazione, Doposcuola" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>
+    <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Note</label><textarea id="rNote" rows="3" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></textarea></div>
+    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-500 transition shadow-lg text-lg"><i class="fa-solid fa-check mr-2"></i>Conferma Registrazione</button>
+  </form>
+</section>
 
-    <div id="bookingModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50"><div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4"><div class="flex justify-between"><h3 class="font-bold text-lg" id="modalTeacherName">Prenota Lezione</h3><button onclick="closeBookingModal()" aria-label="Chiudi"><i class="fa-solid fa-xmark"></i></button></div><p class="text-xs text-slate-500" id="modalTeacherSkill"></p><form onsubmit="confirmBooking(event)" class="space-y-3"><input type="hidden" id="modalTeacherId"><input type="number" id="bookingHours" min="1" max="5" value="1" required class="w-full p-2.5 border rounded-xl dark:bg-slate-700"><div class="flex gap-2"><button type="button" onclick="closeBookingModal()" class="w-1/2 bg-slate-100 dark:bg-slate-700 py-2.5 rounded-xl" data-i18n="modal_cancel">Annulla</button><button class="w-1/2 bg-blue-900 text-white py-2.5 rounded-xl" data-i18n="modal_conf">Conferma</button></div></form></div></div>
-    <div id="blueprintModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50"><div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col"><div class="flex justify-between items-center p-4 border-b"><h3 class="font-bold text-xl" data-i18n="blueprint_title">Architettura dell'App</h3><button onclick="closeBlueprintModal()" aria-label="Chiudi"><i class="fa-solid fa-xmark"></i></button></div><div class="flex-grow p-4 bg-slate-200 dark:bg-slate-950 overflow-auto flex items-center justify-center"><img id="blueprintImage" src="assets/blueprint.jpg" alt="Blueprint dell'app" class="max-w-full max-h-full object-contain cursor-zoom-in transition-transform duration-300" onclick="toggleZoom()"></div></div></div>
+<!-- ===================== IMPOSTAZIONI / PROFILO ===================== -->
+<section id="impostazioni" class="tc max-w-3xl mx-auto space-y-6">
+  <div class="text-center"><h2 class="text-2xl font-bold dark:text-white">Impostazioni - Il Mio Profilo</h2></div>
+  <div id="noProf" class="hidden bg-slate-100 dark:bg-slate-800 rounded-2xl p-8 text-center border border-slate-200 dark:border-slate-700">
+    <i class="fa-solid fa-user-slash text-slate-400 text-4xl"></i>
+    <p class="mt-4 text-slate-500">Non sei ancora registrato.</p>
+    <button onclick="go('registrazione')" class="mt-3 bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-500 transition">Vai alla Registrazione</button>
+  </div>
+  <div id="profCard" class="hidden bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">
+    <div class="flex items-center gap-5">
+      <img id="pPhoto" class="photo-circle" alt="Foto profilo">
+      <div><h3 id="pName" class="text-xl font-bold dark:text-white"></h3><p id="pCat" class="text-sm text-blue-600 dark:text-blue-400 font-semibold"></p><p id="pCF" class="text-xs text-slate-400 mt-1"></p></div>
+    </div>
+    <div id="pDetails" class="grid sm:grid-cols-2 gap-3"></div>
+    <div class="flex flex-wrap gap-3 pt-4 border-t dark:border-slate-700">
+      <button onclick="editProf()" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-blue-800 transition"><i class="fa-solid fa-pen mr-1"></i> Modifica Profilo</button>
+      <button onclick="openDel()" class="bg-red-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-red-500 transition"><i class="fa-solid fa-trash mr-1"></i> Cancella Iscrizione</button>
+    </div>
+  </div>
+</section>
 
-    <script>
-        const translations = {
-            it: { header_title:'Banca del Tempo', header_sub:'ACLI - Sezione Ceglie del Campo, Bari', nav_about:'Chi Siamo', nav_cat:'Docenti & Corsi', nav_dash:'Dashboard Ore', nav_don:'Donazioni', nav_master:'Master App', hero_tag:'Scambio Intergenerazionale', hero_title:'Colleghiamo la memoria e il futuro a Bari', hero_desc:'La Banca del Tempo permette ai lavoratori in pensione di mettere a disposizione la propria esperienza lavorativa e umana per i giovani.', hero_btn1:'Esplora Insegnanti', hero_btn2:'Aderisci come Docente', hero_btn_blueprint:'Visualizza Blueprint', hero_img_title:'Uniamo le generazioni', hero_img_caption:'Costruiamo insieme una comunità basata sulla condivisione delle competenze, il dialogo e il supporto reciproco.', stat_hours:'Ore Erogate sul Territorio', areas_title:'Le Nostre Aree di Insegnamento', areas_sub:'Scopri le discipline pratiche e teoriche offerte dai nostri docenti in pensione.', cat_title:'Catalogo Docenti & Mentori', cat_desc:'Esplora le biografie certificate ed effettua una prenotazione di ore.', dash_title:'Dashboard & Calcolatore Ore', dash_b1_t:'Totale Ore Disponibili', dash_b2_t:'Il Tuo Saldo Tempo', dash_b3_t:'Settore Più Richiesto', dash_b3_v:'Agricoltura', hours_word:'Ore', dash_table_title:'Le Tue Prenotazioni Programmate', don_title:'Sostieni la Banca del Tempo', don_desc:'La donazione economica è completamente libera, priva di massimali e NON obbligatoria.', don_btn:'Invia Donazione Volontaria', master_title:'ACLI Master App - Back-End', master_desc:"Inserisci il Codice di Identificazione Master per abilitare l'inserimento di nuovi docenti.", master_btn_auth:'Autentica Operatore ACLI', master_auth_ok:'Operatore Autenticato', master_f_btn:'+ Salva', modal_cancel:'Annulla', modal_conf:'Conferma', blueprint_title:"Architettura dell'App", verified:'Verificato ACLI', book:'Prenota Lezione', confirmed:'Confermata' },
-            en: { header_title:'Time Bank', header_sub:'ACLI - Ceglie del Campo Section, Bari', nav_about:'About Us', nav_cat:'Teachers & Courses', nav_dash:'Hours Dashboard', nav_don:'Donations', nav_master:'Master App', hero_tag:'Intergenerational Exchange', hero_title:'Connecting memory and future in Bari', hero_desc:'The Time Bank allows retired workers to share their professional and life experience with youth.', hero_btn1:'Explore Teachers', hero_btn2:'Join as a Teacher', hero_btn_blueprint:'View Blueprint', hero_img_title:'Uniting generations', hero_img_caption:'Building a community based on skill sharing, dialogue, and mutual support together.', stat_hours:'Hours Provided Locally', areas_title:'Our Teaching Areas', areas_sub:'Discover the disciplines offered by our retired teachers.', cat_title:'Teachers & Mentors Catalog', cat_desc:'Explore certified biographies and book your hours.', dash_title:'Dashboard & Hours Calculator', dash_b1_t:'Total Available Hours', dash_b2_t:'Your Time Balance', dash_b3_t:'Most Requested Sector', dash_b3_v:'Agriculture', hours_word:'Hours', dash_table_title:'Your Scheduled Bookings', don_title:'Support the Time Bank', don_desc:'Donations are completely free, without limits, and NOT mandatory.', don_btn:'Send Voluntary Donation', master_title:'ACLI Master App - Back-End', master_desc:'Enter the Master Identification Code.', master_btn_auth:'Authenticate', master_auth_ok:'Authenticated Operator', master_f_btn:'+ Save', modal_cancel:'Cancel', modal_conf:'Confirm', blueprint_title:'App Architecture Blueprint', verified:'ACLI Verified', book:'Book Lesson', confirmed:'Confirmed' },
-            de: { header_title:'Zeitbank', header_sub:'ACLI - Sektion Ceglie del Campo, Bari', nav_about:'Über Uns', nav_cat:'Lehrer & Kurse', nav_dash:'Stunden-Dashboard', nav_don:'Spenden', nav_master:'Master-App', hero_tag:'Generationenaustausch', hero_title:'Erinnerung und Zukunft in Bari verbinden', hero_desc:'Die Zeitbank ermöglicht es pensionierten Arbeitnehmern, ihre Berufs- und Lebenserfahrung mit der Jugend zu teilen.', hero_btn1:'Lehrer entdecken', hero_btn2:'Als Lehrer beitreten', hero_btn_blueprint:'Blueprint ansehen', hero_img_title:'Generationen vereinen', hero_img_caption:'Gemeinsam eine Gemeinschaft aufbauen, die auf dem Austausch von Fähigkeiten basiert.', stat_hours:'Lokal erbrachte Stunden', areas_title:'Unsere Unterrichtsbereiche', areas_sub:'Entdecken Sie die Disziplinen unserer pensionierten Lehrer.', cat_title:'Katalog der Lehrer & Mentoren', cat_desc:'Erkunden Sie zertifizierte Biografien und buchen Sie Ihre Stunden.', dash_title:'Dashboard & Stundenrechner', dash_b1_t:'Gesamt verfügbare Stunden', dash_b2_t:'Ihr Zeitguthaben', dash_b3_t:'Am meisten gefragt', dash_b3_v:'Landwirtschaft', hours_word:'Stunden', dash_table_title:'Ihre geplanten Buchungen', don_title:'Unterstützen Sie die Zeitbank', don_desc:'Spenden sind völlig frei, ohne Limits und NICHT obligatorisch.', don_btn:'Freiwillige Spende senden', master_title:'ACLI Master-App - Back-End', master_desc:'Geben Sie den Master-Identifikationscode ein.', master_btn_auth:'Authentifizieren', master_auth_ok:'Authentifizierter Betreiber', master_f_btn:'+ Speichern', modal_cancel:'Abbrechen', modal_conf:'Bestätigen', blueprint_title:'App-Architektur', verified:'ACLI verifiziert', book:'Lektion buchen', confirmed:'Bestätigt' }
-        };
-        let currentLang = 'it', userHours = 12, isZoomed = false;
-        let teachers = [{ id:1, name:'Antonio Capitano', category:'Pratica', skill:'Potatore Olivi & Agricoltura', bio:'Ex-agronomo e agricoltore con oltre 42 anni di lavoro nei campi pugliesi.', hours:25, rating:4.9, reviewsCount:14 }, { id:2, name:'Prof.ssa Maria Altamura', category:'Teorica', skill:'Matematica & Fisica', bio:'Insegnante di liceo in pensione con 38 anni di esperienza scolastica.', hours:18, rating:5, reviewsCount:22 }];
-        let bookings = [{ teacher:'Antonio Capitano', skill:'Potatore Olivi & Agricoltura', hours:2 }];
-        const areas = [['fa-seedling','area_agri','Agricoltura'],['fa-wrench','area_mech','Officina Meccanica'],['fa-scissors','area_prun','Potatura'],['fa-utensils','area_cook','Cucina e Igiene Alimentare'],['fa-mug-hot','area_bar','Bar'],['fa-book-open','area_tutor','Doposcuola']];
-        function switchTab(id) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById(id).classList.add('active'); if (id === 'catalogo') renderTeachers(); if (id === 'dashboard') renderDashboard(); }
-        function changeLanguage() { currentLang = document.getElementById('langSelect').value; document.documentElement.lang = currentLang; const text = translations[currentLang]; document.querySelectorAll('[data-i18n]').forEach(el => { if (text[el.dataset.i18n]) el.textContent = text[el.dataset.i18n]; }); renderTeachers(); renderDashboard(); }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('themeIcon'); icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun'); }
-        function renderTeachers() { const text = translations[currentLang], category = document.getElementById('filterCategory').value; document.getElementById('teachersList').innerHTML = teachers.filter(t => category === 'ALL' || t.category === category).map(t => `<article class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4"><div class="flex justify-between gap-3"><div><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full">${t.skill}</span><h3 class="text-xl font-bold text-slate-900 dark:text-white mt-2">${t.name}</h3></div><span class="text-emerald-700 text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-shield-halved"></i> ${text.verified}</span></div><p class="text-sm text-slate-600 dark:text-slate-300">${t.bio}</p><div class="text-sm text-amber-500"><i class="fa-solid fa-star"></i> <b>${t.rating}</b> <span class="text-slate-400 text-xs">(${t.reviewsCount})</span></div><div class="pt-3 border-t flex items-center justify-between"><span class="text-xs text-slate-500">Disponibilità: <b>${t.hours} ${text.hours_word}</b></span><button onclick="openBookingModal(${t.id})" class="bg-blue-900 text-white font-bold text-xs px-4 py-2 rounded-xl">${text.book}</button></div></article>`).join(''); }
-        function renderDashboard() { document.getElementById('userHoursBalance').textContent = `${userHours} ${translations[currentLang].hours_word}`; document.getElementById('bookingTableBody').innerHTML = bookings.map(b => `<tr><td class="p-3 font-semibold">${b.teacher}</td><td class="p-3">${b.skill}</td><td class="p-3 font-bold">${b.hours}</td><td class="p-3 text-emerald-600">${translations[currentLang].confirmed}</td></tr>`).join(''); }
-        function openBookingModal(id) { const teacher = teachers.find(t => t.id === id); document.getElementById('modalTeacherId').value = id; document.getElementById('modalTeacherName').textContent = teacher.name; document.getElementById('modalTeacherSkill').textContent = teacher.skill; document.getElementById('bookingModal').classList.add('flex'); document.getElementById('bookingModal').classList.remove('hidden'); }
-        function closeBookingModal() { document.getElementById('bookingModal').classList.add('hidden'); document.getElementById('bookingModal').classList.remove('flex'); }
-        function confirmBooking(event) { event.preventDefault(); const hours = Number(document.getElementById('bookingHours').value); if (hours > userHours) return alert('Saldo ore insufficiente.'); const teacher = teachers.find(t => t.id === Number(document.getElementById('modalTeacherId').value)); userHours -= hours; bookings.push({ teacher:teacher.name, skill:teacher.skill, hours }); closeBookingModal(); switchTab('dashboard'); }
-        function openBlueprintModal() { document.getElementById('blueprintModal').classList.add('flex'); document.getElementById('blueprintModal').classList.remove('hidden'); }
-        function closeBlueprintModal() { document.getElementById('blueprintModal').classList.add('hidden'); document.getElementById('blueprintModal').classList.remove('flex'); document.getElementById('blueprintImage').classList.remove('zoom-active'); isZoomed = false; }
-        function toggleZoom() { isZoomed = !isZoomed; document.getElementById('blueprintImage').classList.toggle('zoom-active', isZoomed); }
-        function authenticateMaster() { document.getElementById('masterAuthBlock').classList.add('hidden'); document.getElementById('masterPanel').classList.remove('hidden'); }
-        function saveTeacher(event) { event.preventDefault(); teachers.push({ id:Date.now(), name:tName.value, category:tCategory.value, skill:tSkill.value, bio:tBio.value, hours:10, rating:5, reviewsCount:0 }); event.target.reset(); switchTab('catalogo'); }
-        function handleDonation(event) { event.preventDefault(); alert('Grazie per il tuo sostegno!'); event.target.reset(); }
-        document.getElementById('values').innerHTML = [['fa-graduation-cap','Materie Teoriche','Supporto nello studio di Matematica, Storia e materie scolastiche.'],['fa-hammer','Mestieri Pratici','Trasmissione sul campo di competenze tradizionali e manuali.'],['fa-handshake','Accreditamento ACLI','Docenti accreditati presso la sede ACLI Bari.']].map(v => `<article class="bg-white dark:bg-slate-800 p-6 rounded-xl border shadow-sm"><i class="fa-solid ${v[0]} text-blue-900 text-2xl"></i><h3 class="font-bold text-lg mt-2">${v[1]}</h3><p class="text-sm text-slate-600 dark:text-slate-400">${v[2]}</p></article>`).join('');
-        document.getElementById('areas').innerHTML = areas.map(a => `<div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border flex flex-col items-center text-center"><div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl mb-3"><i class="fa-solid ${a[0]}"></i></div><h3 class="font-bold" data-i18n="${a[1]}">${a[2]}</h3></div>`).join('');
-        changeLanguage();
-    </script>
+<!-- ===== DOCENTI ===== -->
+<section id="docenti" class="tc space-y-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 dark:border-slate-700 pb-4">
+<div><h2 class="text-2xl font-bold dark:text-white">Catalogo Docenti &amp; Mentori</h2><p class="text-sm text-slate-500">Clicca su una scheda per vedere l'anagrafica completa.</p></div>
+<select id="fCat" onchange="renderT()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm dark:text-white outline-none"><option value="ALL">Tutte le Aree</option><option value="Pratica">Mestieri Pratici</option><option value="Teorica">Materie Teoriche</option></select>
+</div>
+<div id="tList" class="grid md:grid-cols-2 gap-6"></div>
+</section>
+
+<!-- ===== PROGETTI ===== -->
+<section id="progetti" class="tc space-y-6">
+<div class="text-center"><h2 class="text-2xl font-bold dark:text-white">Progetti Comunitari</h2><p class="text-sm text-slate-500">Iniziative che utilizzano le risorse umane formate con questo programma di inclusione sociale.</p></div>
+<div class="w-full rounded-2xl overflow-hidden shadow-lg h-56 sm:h-80 relative border border-slate-200 dark:border-slate-700">
+<img src="assets/img2.jpg" alt="Gratitudine e comunità" class="w-full h-full object-cover">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6"><div><h3 class="text-white font-bold text-2xl">La comunità cresce insieme</h3><p class="text-slate-200 text-sm mt-1">I progetti nati dalle competenze trasmesse dai nostri docenti.</p></div></div>
+</div>
+<div id="projList" class="grid md:grid-cols-2 gap-4"></div>
+</section>
+
+<!-- ===== PRENOTA ORE (CALENDARIO) ===== -->
+<section id="prenota" class="tc space-y-6">
+<h2 class="text-2xl font-bold dark:text-white">Prenota Ore - Calendario</h2>
+<p class="text-sm text-slate-500 -mt-4">Seleziona una data, una fascia oraria libera e conferma.</p>
+<div class="grid lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 space-y-4">
+<div class="flex justify-between items-center">
+<button onclick="calNav(-1)" class="bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
+<h3 id="calTitle" class="font-bold text-lg dark:text-white"></h3>
+<button onclick="calNav(1)" class="bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase">
+<div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div class="text-red-400">Dom</div>
+</div>
+<div id="calGrid" class="grid grid-cols-7 gap-1"></div>
+<div class="flex flex-wrap gap-4 text-[11px] text-slate-500 pt-2 border-t dark:border-slate-700">
+<span><span class="inline-block w-3 h-3 rounded bg-blue-600 mr-1"></span>Selezionato</span>
+<span><span class="inline-block w-3 h-3 rounded bg-amber-400 mr-1"></span>Oggi</span>
+<span><span class="inline-block w-3 h-3 rounded bg-red-200 mr-1"></span>Non disponibile</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 space-y-4 h-fit">
+<h4 class="font-bold dark:text-white">Riepilogo</h4>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Docente</label><select id="bTeacher" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></select></div>
+<div id="slotsArea" class="space-y-2 hidden"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fasce Orarie</label><div id="slotsList" class="grid grid-cols-2 gap-2"></div></div>
+<div id="bookSummary" class="hidden space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-sm">
+<p id="bsDate" class="font-semibold dark:text-blue-300"></p>
+<p id="bsSlot" class="dark:text-slate-300"></p>
+<p id="bsTeacher" class="dark:text-slate-300"></p>
+<button onclick="confirmCalBook()" class="w-full bg-blue-900 text-white font-bold py-2.5 rounded-xl hover:bg-blue-800 transition mt-2"><i class="fa-solid fa-check mr-1"></i> Conferma Prenotazione</button>
+</div>
+<p id="noDayHint" class="text-xs text-slate-400">Scegli un giorno nel calendario.</p>
+</div>
+</div>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard" class="tc space-y-6">
+<h2 class="text-2xl font-bold dark:text-white">Dashboard &amp; Ore</h2>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Totale Ore Disponibili</span><div class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 mt-2">340 Ore</div></div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Il Tuo Saldo Tempo</span><div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2" id="uBal"></div></div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Settore Più Richiesto</span><div class="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-2">Agricoltura</div></div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4">
+<h3 class="font-bold text-lg dark:text-white">Le Tue Prenotazioni</h3>
+<div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 uppercase text-xs"><tr><th class="p-3">Docente</th><th class="p-3">Materia</th><th class="p-3">Data</th><th class="p-3">Ora</th><th class="p-3">Stato</th></tr></thead><tbody id="bTable" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody></table></div>
+</div>
+</section>
+
+<!-- ===== DONAZIONI ===== -->
+<section id="donazioni" class="tc max-w-2xl mx-auto space-y-6">
+<div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-center space-y-4">
+<div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-full flex items-center justify-center mx-auto text-2xl"><i class="fa-solid fa-heart"></i></div>
+<h2 class="text-2xl font-bold dark:text-white">Sostieni la Banca del Tempo</h2>
+<p class="text-sm text-slate-600 dark:text-slate-400">La donazione è completamente libera, priva di massimali e NON obbligatoria.</p>
+<form onsubmit="return doDon(event)" class="space-y-4 pt-4 text-left">
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Importo Libero (€)</label><input type="number" min="1" placeholder="10" required class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-amber-500"></div>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome Sostenitore (Opzionale)</label><input type="text" class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-amber-500"></div>
+<button type="submit" class="w-full bg-amber-500 text-blue-950 font-bold py-3 rounded-xl hover:bg-amber-400 transition shadow-md">Invia Donazione Volontaria</button>
+</form></div></section>
+
+<!-- ===== MASTER / ADMIN ===== -->
+<section id="master" class="tc max-w-2xl mx-auto space-y-6">
+<div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md space-y-6">
+<h2 class="text-xl font-bold text-blue-900 dark:text-blue-400">ACLI Admin - Gestione Docenti</h2>
+<div id="mAuth" class="space-y-4">
+<p class="text-sm text-slate-500">Inserisci il Codice di Identificazione Admin per abilitare l'inserimento di nuovi docenti.</p>
+<input type="password" id="mCode" placeholder="Codice Admin" class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-blue-900">
+<button onclick="authM()" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition">Autentica Operatore ACLI</button>
+</div>
+<div id="mPanel" class="hidden space-y-4 border-t dark:border-slate-700 pt-6">
+<div class="p-3 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-400 text-xs font-semibold flex items-center justify-between"><span><i class="fa-solid fa-circle-check mr-1"></i> Operatore Autenticato</span><button onclick="logoutM()" class="underline">Esci</button></div>
+<h3 class="font-bold dark:text-white text-lg">Registra Nuovo Docente</h3>
+<form onsubmit="return saveT(event)" class="space-y-3">
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome e Cognome</label><input type="text" id="tN" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></div>
+<div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Area</label><select id="tCat" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"><option value="Pratica">Pratica</option><option value="Teorica">Teorica</option></select></div><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Specializzazione</label><input type="text" id="tSk" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></div></div>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Biografia</label><textarea id="tBio" rows="3" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></textarea></div>
+<button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition">+ Salva Docente</button>
+</form></div></div></section>
+
+</main>
+
+<!-- MODALE DOCENTE -->
+<div id="tModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[60]">
+<div class="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 space-y-4 shadow-2xl">
+<div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
+<h3 id="tModalTitle" class="font-bold text-lg dark:text-white"></h3>
+<button onclick="hideM('tModal')" class="w-9 h-9 flex items-center justify-center bg-slate-200 dark:bg-slate-700 hover:bg-red-500 hover:text-white rounded-full transition"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div id="tModalBody" class="space-y-4"></div>
+<button onclick="hideM('tModal');go('prenota')" class="w-full bg-blue-900 text-white font-bold py-2.5 rounded-xl hover:bg-blue-800 transition"><i class="fa-solid fa-calendar-check mr-1"></i> Prenota con questo Docente</button>
+</div>
+</div>
+
+<!-- MODALE BLUEPRINT -->
+<div id="bpModal" class="fixed inset-0 bg-black/85 hidden z-[70]">
+<div class="w-full h-full flex flex-col">
+<div class="flex justify-between items-center p-4 bg-slate-900/95 border-b border-white/10">
+<div><h3 class="font-bold text-xl text-white">Architettura dell'App - Blueprint</h3><p class="text-xs text-slate-400">Clicca sull'immagine per zoom 2x / riduci. Scorri per esplorare.</p></div>
+<div class="flex items-center gap-3">
+<a href="assets/blueprint.jpg" download="Blueprint_Banca_del_Tempo.jpg" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fa-solid fa-download"></i> Scarica</a>
+<button onclick="closeBP()" class="w-10 h-10 flex items-center justify-center bg-slate-700 hover:bg-red-500 text-white rounded-full transition text-lg"><i class="fa-solid fa-xmark"></i></button>
+</div>
+</div>
+<div class="flex-grow overflow-auto bg-slate-950 p-4">
+<img id="bpImg" src="assets/blueprint.jpg" alt="Blueprint" class="max-w-full cursor-zoom-in transition-transform duration-300 mx-auto rounded shadow-2xl" onclick="toggleZoomBP()">
+</div>
+</div>
+</div>
+
+<!-- MODALE CANCELLAZIONE -->
+<div id="delModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[60]">
+<div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
+<div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+<h3 class="font-bold text-lg dark:text-white">Cancellare l'iscrizione?</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400">Tutti i tuoi dati (profilo, foto, prenotazioni e saldo ore) saranno eliminati definitivamente.</p>
+<div class="flex gap-3 pt-2">
+<button onclick="hideM('delModal')" class="w-1/2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2.5 rounded-xl font-bold text-sm">Annulla</button>
+<button onclick="confirmDel()" class="w-1/2 bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-500 transition">Sì, Cancella</button>
+</div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-blue-900 dark:bg-slate-950 text-white mt-auto">
+<div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-blue-200">
+<p>© 2026 Banca del Tempo - ACLI Ceglie del Campo, Bari</p>
+<p>Logo ACLI a cura di <strong class="text-white">Luigi Giovannelli</strong></p>
+</div>
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const LSP='bdt_profile', LSB='bdt_bookings', LSU='bdt_hours';
+const MASTER_CODE='ACLIMASTER2026';
+let userHours=parseInt(localStorage.getItem(LSU))||12;
+if(isNaN(userHours))userHours=12;
+let bookings=[]; try{bookings=JSON.parse(localStorage.getItem(LSB)||'[]')}catch(e){bookings=[]}
+const getProfile=()=>{try{return JSON.parse(localStorage.getItem(LSP))}catch(e){return null}};
+
+/* ---------- DATI DOCENTI (anagrafica completa) ---------- */
+const TEACHERS=[
+{id:1,name:'Antonio Capitano',cat:'Pratica',skill:'Potatura Olivi & Agricoltura',bio:'Ex agronomo e agricoltore con oltre 42 anni di lavoro nei campi pugliesi. Accreditato ACLI per la trasmissione delle tecniche tradizionali di coltivazione e potatura.',birth:'12/03/1955',place:'Ruvo di Puglia (BA)',profession:'Agronomo / Agricoltore',years:42,tel:'333 1234567',email:'a.capitano@bancatempo.it',avail:'Lun - Ven 09:00-13:00',rating:4.9,hours:25},
+{id:2,name:'Prof.ssa Maria Altamura',cat:'Teorica',skill:'Matematica & Fisica',bio:'Insegnante di liceo in pensione. Ha dedicato 38 anni all\'insegnamento scolastico e offre supporto ai giovani per recuperi e approfondimenti.',birth:'25/07/1958',place:'Bari (BA)',profession:'Insegnante di Liceo',years:38,tel:'333 2345678',email:'m.altamura@bancatempo.it',avail:'Mar - Gio 15:00-18:00',rating:5.0,hours:18},
+{id:3,name:'Giuseppe De Santis',cat:'Pratica',skill:'Officina Meccanica',bio:'Ex meccanico di auto e macchine agricole. 45 anni di officina, trasmissione pratica della manutenzione e della diagnosi dei guasti.',birth:'02/11/1950',place:'Modugno (BA)',profession:'Meccanico',years:45,tel:'333 3456789',email:'g.desantis@bancatempo.it',avail:'Lun - Sab 09:00-12:00',rating:4.8,hours:30},
+{id:4,name:'Rosa Ferrara',cat:'Teorica',skill:'Italiano per Stranieri',bio:'Ex docente di lettere con specializzazione in italiano L2. Supporta l\'inclusione linguistica dei cittadini extracomunitari.',birth:'18/05/1962',place:'Molfetta (BA)',profession:'Docente di Lettere',years:30,tel:'333 4567890',email:'r.ferrara@bancatempo.it',avail:'Lun - Mer 16:00-19:00',rating:4.9,hours:20},
+{id:5,name:'Franco Palmisano',cat:'Pratica',skill:'Cucina & Igiene Alimentare',bio:'Ex cuoco professionista e titolare di attività ristorativa. Insegna cucina tradizionale pugliese e HACCP di base.',birth:'30/09/1953',place:'Bari (BA)',profession:'Cuoco / Ristoratore',years:35,tel:'333 5678901',email:'f.palmisano@bancatempo.it',avail:'Gio - Ven 15:00-18:00',rating:4.7,hours:15},
+{id:6,name:'Lucia Milella',cat:'Teorica',skill:'Musica & Video Creazione',bio:'Ex maestra di musica e appassionata di video making. Insegna basi musicali, montaggio video digitale e creazione di contenuti multimediali.',birth:'14/02/1960',place:'Trani (BA)',profession:'Maestra di Musica',years:28,tel:'333 6789012',email:'l.milella@bancatempo.it',avail:'Mer - Ven 10:00-13:00',rating:5.0,hours:22}
+];
+
+/* ---------- PROGETTI COMUNITARI ---------- */
+const PROJECTS=[
+{title:'Orto Condiviso di Ceglie',promoter:'ACLI + Comune di Ceglie del Campo',res:'3 docenti Agricoltura - 12 allievi formati',period:'Marzo 2025 - Ottobre 2025',status:'Attivo',desc:'Recupero di un terreno comunale coltivato dagli allievi formati dai docenti agricoltori della Banca del Tempo. Prodotti devoluti alle famiglie in difficoltà.'},
+{title:'Doposcuola Ponte Nuovo',promoter:'ACLI Gioventù',res:'2 docenti Teoriche - 20 ragazzi',period:'Settembre 2025 - Giugno 2026',status:'Attivo',desc:'Sportello di supporto allo studio pomeridiano tenuto da docenti in pensione per ragazzi delle scuole medie del quartiere.'},
+{title:'Cucine del Mondo',promoter:'Caritas Diocesana + ACLI',res:'1 docente Cucina - 15 allievi extracomunitari',period:'Gennaio 2025 - Maggio 2025',status:'Concluso',desc:'Corso di cucina e igiene alimentare per cittadini extracomunitari, con rilascio di attestato utile all\'inserimento lavorativo nella ristorazione.'},
+{title:'Mani in Officina',promoter:'Laboratorio ACLI Bari',res:'1 docente Meccanica - 8 allievi',period:'Novembre 2026 - previsto',status:'In partenza',desc:'Percorso pratico di manutenzione bici e motorini per giovani del territorio, guidato dal nostro docente di officicina meccanica.'},
+{title:'Note Inclusive',promoter:'Corale ACLI Ceglie',res:'1 docente Musica & Video - 10 allievi',period:'Ottobre 2026 - previsto',status:'In partenza',desc:'Corso di basi musicali e creazione video per documentare le attività della comunità, aperto a giovani e pensionati.'}
+];
+
+/* ---------- NAVIGAZIONE / UI ---------- */
+function go(t){
+document.querySelectorAll('.tc').forEach(e=>e.classList.remove('on'));
+const el=$(t); if(el)el.classList.add('on');
+window.scrollTo({top:0});
+if(t==='docenti')renderT();
+if(t==='dashboard')renderDash();
+if(t==='prenota')renderCal();
+if(t==='progetti')renderProj();
+if(t==='registrazione')checkReg();
+if(t==='impostazioni')renderProf();
+}
+function tdk(){
+document.documentElement.classList.toggle('dark');
+const i=$('tIco'); if(i)i.classList.toggle('fa-sun');
+}
+function hideM(id){const m=$(id);m.classList.add('hidden');m.classList.remove('flex');}
+function showM(id){const m=$(id);m.classList.remove('hidden');m.classList.add('flex');}
+
+/* ---------- I18N (nav + titoli principali) ---------- */
+const DICT={
+en:{'Chi Siamo':'About Us','Missione':'Mission','Docenti':'Teachers','Progetti':'Projects','Prenota Ore':'Book Hours','Dashboard':'Dashboard','Donazioni':'Donations','Registrati':'Sign Up','Profilo':'Profile','Admin':'Admin','Registrati Ora':'Sign Up Now','Esplora Docenti':'Explore Teachers','Scopri la Missione':'Discover the Mission','Blueprint':'Blueprint','Catalogo Docenti & Mentori':'Teachers & Mentors Catalog','Progetti Comunitari':'Community Projects','Prenota Ore - Calendario':'Book Hours - Calendar','Dashboard & Ore':'Dashboard & Hours','Il Mio Profilo':'My Profile','Sostieni la Banca del Tempo':'Support the Time Bank'},
+de:{'Chi Siamo':'Über Uns','Missione':'Mission','Docenti':'Lehrer','Progetti':'Projekte','Prenota Ore':'Stunden buchen','Dashboard':'Dashboard','Donazioni':'Spenden','Registrati':'Registrieren','Profilo':'Profil','Admin':'Admin','Registrati Ora':'Jetzt registrieren','Esplora Docenti':'Lehrer entdecken','Scopri la Missione':'Mission entdecken','Blueprint':'Blueprint','Catalogo Docenti & Mentori':'Katalog der Lehrer','Progetti Comunitari':'Gemeinschaftsprojekte','Prenota Ore - Kalender':'Stunden buchen - Kalender','Dashboard & Ore':'Dashboard & Stunden','Il Mio Profilo':'Mein Profil','Sostieni la Banca del Tempo':'Unterstützen Sie die Zeitbank'}
+};
+function sL(){
+const L=$('lS').value;
+document.querySelectorAll('button,h1,h2,h3').forEach(el=>{
+const t=el.textContent.trim();
+if(el.dataset.orig===undefined)el.dataset.orig=t;
+const src=el.dataset.orig;
+if(L==='it'){if(el.dataset.t!==undefined){el.textContent=el.dataset.t;}}
+else{const tr=DICT[L][src];if(tr){if(el.dataset.t===undefined)el.dataset.t=t;el.textContent=tr;}}
+});
+}
+function renderT(){
+const cat=$('fCat').value, list=$('tList');
+list.innerHTML='';
+TEACHERS.filter(t=>cat==='ALL'||t.cat===cat).forEach(t=>{
+list.innerHTML+=`<div onclick="openT(${t.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-3 hover:shadow-lg hover:border-blue-300 transition">
+<div class="flex justify-between items-start">
+<div><span class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 text-xs font-bold px-2.5 py-0.5 rounded-full">${t.skill}</span>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">${t.name}</h3>
+<p class="text-xs text-slate-400 mt-0.5"><i class="fa-solid fa-briefcase mr-1"></i>${t.profession} - ${t.years} anni</p></div>
+<span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold px-2 py-1 rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0"><i class="fa-solid fa-shield-halved mr-1"></i>Verificato ACLI</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${t.bio}</p>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
+<span class="text-sm text-amber-500"><i class="fa-solid fa-star"></i> <strong class="text-slate-800 dark:text-slate-200">${t.rating}</strong></span>
+<span class="text-xs text-slate-500">Disponibilità: <strong>${t.avail}</strong> (${t.hours} ore)</span>
+</div></div>`;
+});
+}
+function openT(id){
+const t=TEACHERS.find(x=>x.id===id); if(!t)return;
+$('tModalTitle').textContent=t.name;
+const row=(l,v)=>`<div class="flex justify-between gap-3 py-1.5 border-b dark:border-slate-700 text-sm"><span class="text-slate-400">${l}</span><span class="font-semibold dark:text-slate-200 text-right">${v}</span></div>`;
+$('tModalBody').innerHTML=`<span class="inline-block bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 text-xs font-bold px-2.5 py-0.5 rounded-full">${t.skill}</span>
+${row('Data di Nascita',t.birth)}${row('Luogo di Nascita',t.place)}${row('Ex Professione',t.profession)}${row('Anni di Esperienza',t.years)}${row('Telefono',t.tel)}${row('Email',t.email)}${row('Disponibilità',t.avail)}${row('Ore Disponibili',t.hours)}${row('Categoria',t.cat==='Pratica'?'Mestiere Pratico':'Materia Teorica')}
+<p class="text-sm text-slate-600 dark:text-slate-300 pt-2">${t.bio}</p>`;
+showM('tModal');
+}
+function renderProj(){
+const badges={'Attivo':'bg-emerald-100 text-emerald-800 border-emerald-200','Concluso':'bg-slate-100 text-slate-600 border-slate-200','In partenza':'bg-amber-100 text-amber-800 border-amber-200'};
+$('projList').innerHTML=PROJECTS.map(p=>`<div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold dark:text-white">${p.title}</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${badges[p.status]}">${p.status}</span></div>
+<p class="text-sm text-slate-600 dark:text-slate-400">${p.desc}</p>
+<div class="text-xs text-slate-500 pt-2 border-t dark:border-slate-700 space-y-1">
+<p><i class="fa-solid fa-building mr-1 text-blue-500"></i><strong>Ente:</strong> ${p.promoter}</p>
+<p><i class="fa-solid fa-users mr-1 text-emerald-500"></i><strong>Risorse:</strong> ${p.res}</p>
+<p><i class="fa-solid fa-calendar mr-1 text-amber-500"></i><strong>Periodo:</strong> ${p.period}</p>
+</div></div>`).join('');
+}
+</script>
+
+<script>
+/* ---------- REGISTRAZIONE ---------- */
+let editing=false;
+$('phI').addEventListener('change',e=>{
+const f=e.target.files[0]; if(!f)return;
+if(f.size>2*1024*1024){alert('Foto troppo grande (max 2MB).');return;}
+const r=new FileReader();
+r.onload=ev=>{$('phP').src=ev.target.result;$('phP').classList.remove('hidden');$('phH').classList.add('hidden');};
+r.readAsDataURL(f);
+});
+function checkReg(){
+const p=getProfile();
+if(p&&!editing){$('regOk').classList.remove('hidden');$('regF').classList.add('hidden');$('regOkN').textContent='Ciao '+p.nome+' '+p.cog+'! Gestisci i tuoi dati dal profilo.';}
+else{$('regOk').classList.add('hidden');$('regF').classList.remove('hidden');}
+}
+$('regF').addEventListener('submit',e=>{
+e.preventDefault();
+const p={nome:$('rNome').value.trim(),cog:$('rCog').value.trim(),dn:$('rDN').value,ln:$('rLN').value.trim(),sesso:$('rSesso').value,cf:$('rCF').value.trim().toUpperCase(),via:$('rVia').value.trim(),civ:$('rCiv').value.trim(),cap:$('rCap').value.trim(),com:$('rCom').value.trim(),prov:$('rProv').value,tel:$('rTel').value.trim(),email:$('rEmail').value.trim(),cat:$('rCat').value,comp:$('rComp').value.trim(),note:$('rNote').value.trim(),photo:$('phP').classList.contains('hidden')?'':$('phP').src,dt:new Date().toISOString()};
+localStorage.setItem(LSP,JSON.stringify(p));
+editing=false; updateNav();
+alert('Registrazione completata con successo! Benvenuto nella Banca del Tempo.');
+$('regF').reset(); $('phP').classList.add('hidden'); $('phH').classList.remove('hidden');
+go('impostazioni');
+});
+function editProf(){
+const p=getProfile(); if(!p)return;
+editing=true;
+$('rNome').value=p.nome||'';$('rCog').value=p.cog||'';$('rDN').value=p.dn||'';$('rLN').value=p.ln||'';$('rSesso').value=p.sesso||'';$('rCF').value=p.cf||'';$('rVia').value=p.via||'';$('rCiv').value=p.civ||'';$('rCap').value=p.cap||'';$('rCom').value=p.com||'';$('rProv').value=p.prov||'';$('rTel').value=p.tel||'';$('rEmail').value=p.email||'';$('rCat').value=p.cat||'';$('rComp').value=p.comp||'';$('rNote').value=p.note||'';
+if(p.photo){$('phP').src=p.photo;$('phP').classList.remove('hidden');$('phH').classList.add('hidden');}
+go('registrazione'); window.scrollTo({top:0});
+}
+function renderProf(){
+const p=getProfile();
+if(!p){$('noProf').classList.remove('hidden');$('profCard').classList.add('hidden');return;}
+$('noProf').classList.add('hidden');$('profCard').classList.remove('hidden');
+$('pPhoto').src=p.photo||'assets/logo.jpg';
+$('pName').textContent=p.nome+' '+p.cog;
+$('pCat').textContent='Categoria: '+({giovane:'Giovane',pensionato:'Pensionato',extracomunitario:'Extracomunitario',altro:'Altro'}[p.cat]||p.cat);
+$('pCF').textContent='CF: '+p.cf;
+const row=(l,v)=>`<div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-3 py-2"><p class="text-[10px] font-bold text-slate-400 uppercase">${l}</p><p class="text-sm font-semibold dark:text-slate-200">${v||'—'}</p></div>`;
+const dt=p.dn?new Date(p.dn).toLocaleDateString('it-IT'):'—';
+$('pDetails').innerHTML=row('Data di Nascita',dt)+row('Luogo di Nascita',p.ln)+row('Sesso',p.sesso==='M'?'Maschile':p.sesso==='F'?'Femminile':'—')+row('Indirizzo',p.via+' '+p.civ+', '+p.cap+' '+p.com+' ('+p.prov+')')+row('Telefono',p.tel)+row('Email',p.email)+row('Competenze di Interesse',p.comp)+row('Note',p.note)+row('Iscritto dal',new Date(p.dt).toLocaleDateString('it-IT'))+row('Saldo Ore',userHours+' ore');
+}
+function openDel(){showM('delModal');}
+function confirmDel(){
+localStorage.removeItem(LSP);localStorage.removeItem(LSB);localStorage.removeItem(LSU);
+bookings=[];userHours=12;editing=false;
+hideM('delModal');updateNav();renderDash();
+alert('Iscrizione cancellata. Tutti i dati sono stati eliminati.');
+go('landing');
+}
+function updateNav(){
+const p=getProfile();
+$('navR').classList.toggle('hidden',!!p);
+$('navP').classList.toggle('hidden',!p);
+}
+
+/* ---------- CALENDARIO ---------- */
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const SLOTS=['09:00-10:00','10:00-11:00','11:00-12:00','15:00-16:00','16:00-17:00','17:00-18:00'];
+const today=new Date(); today.setHours(0,0,0,0);
+let calY=today.getFullYear(), calM=today.getMonth(), selDate=null, selSlot=null;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function calNav(n){calM+=n; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} selDate=null;selSlot=null;renderCal();renderSlots();}
+function renderCal(){
+$('calTitle').textContent=MESI[calM]+' '+calY;
+const first=new Date(calY,calM,1), off=(first.getDay()+6)%7, dim=new Date(calY,calM+1,0).getDate();
+let h='';
+for(let i=0;i<off;i++)h+='<div></div>';
+for(let d=1;d<=dim;d++){
+const dt=new Date(calY,calM,d), s=iso(dt);
+const isPast=dt<today, isSun=dt.getDay()===0, isTod=dt.getTime()===today.getTime();
+let cls='cd bg-slate-100 dark:bg-slate-700 dark:text-slate-200';
+if(isPast||isSun)cls+=' dis';
+if(isSun)cls+=' text-red-400';
+if(isTod)cls+=' tod';
+if(selDate===s)cls+=' sel';
+h+=`<div class="${cls}" onclick="selDay('${s}')">${d}</div>`;
+}
+$('calGrid').innerHTML=h;
+}
+function selDay(s){selDate=s;selSlot=null;renderCal();renderSlots();}
+function renderSlots(){
+if(!selDate){$('slotsArea').classList.add('hidden');$('bookSummary').classList.add('hidden');$('noDayHint').classList.remove('hidden');return;}
+$('slotsArea').classList.remove('hidden');$('noDayHint').classList.add('hidden');
+$('slotsList').innerHTML=SLOTS.map(s=>{
+const taken=bookings.some(b=>b.date===selDate&&b.slot===s);
+const sel=selSlot===s;
+let cls=taken?'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 cursor-not-allowed line-through':sel?'bg-blue-900 text-white border-blue-900':'bg-slate-100 dark:bg-slate-700 dark:text-slate-200 hover:bg-blue-100 dark:hover:bg-slate-600';
+return `<button ${taken?'disabled':''} onclick="selSlotF('${s}')" class="text-xs font-bold px-2 py-2.5 rounded-lg border border-transparent transition ${cls}">${s}</button>`;
+}).join('');
+$('bookSummary').classList.toggle('hidden',!selSlot);
+if(selSlot){
+const t=TEACHERS.find(x=>x.id==$('bTeacher').value);
+const d=new Date(selDate+'T12:00:00');
+$('bsDate').innerHTML='<i class="fa-regular fa-calendar mr-1"></i>'+d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+$('bsSlot').innerHTML='<i class="fa-regular fa-clock mr-1"></i>'+selSlot+' (1 ora)';
+$('bsTeacher').innerHTML='<i class="fa-solid fa-chalkboard-user mr-1"></i>'+(t?t.name:'—')+(t?' - '+t.skill:'');
+}
+}
+function selSlotF(s){selSlot=s;renderSlots();}
+function confirmCalBook(){
+if(!selDate||!selSlot){alert('Seleziona prima una data e una fascia oraria.');return;}
+const t=TEACHERS.find(x=>x.id==$('bTeacher').value);
+if(!t){alert('Seleziona un docente.');return;}
+if(userHours<1){alert('Saldo ore esaurito. Dona o partecipa per accumulare ore!');return;}
+bookings.push({date:selDate,slot:selSlot,teacher:t.name,skill:t.skill,hours:1});
+userHours--; localStorage.setItem(LSB,JSON.stringify(bookings)); localStorage.setItem(LSU,userHours);
+selDate=null;selSlot=null;renderCal();renderSlots();renderDash();
+alert('Prenotazione confermata con '+t.name+'!');
+go('dashboard');
+}
+function renderDash(){
+$('uBal').textContent=userHours+' Ore';
+if(!bookings.length){$('bTable').innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400 text-sm">Nessuna prenotazione. Vai alla sezione Prenota!</td></tr>';return;}
+$('bTable').innerHTML=bookings.map(b=>{
+const d=new Date(b.date+'T12:00:00').toLocaleDateString('it-IT');
+return `<tr class="dark:text-slate-200"><td class="p-3 font-semibold">${b.teacher}</td><td class="p-3 text-slate-500 dark:text-slate-400">${b.skill}</td><td class="p-3">${d}</td><td class="p-3 font-bold text-blue-900 dark:text-blue-400">${b.slot}</td><td class="p-3"><span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full">Confermata</span></td></tr>`;
+}).join('');
+}
+
+/* ---------- DONAZIONI / ADMIN / BLUEPRINT ---------- */
+function doDon(e){e.preventDefault();e.target.reset();alert('Grazie! La tua donazione volontaria è stata registrata.');return false;}
+function authM(){
+if($('mCode').value===MASTER_CODE){$('mAuth').classList.add('hidden');$('mPanel').classList.remove('hidden');}
+else{alert('Codice non valido.');$('mCode').value='';}
+}
+function logoutM(){$('mAuth').classList.remove('hidden');$('mPanel').classList.add('hidden');$('mCode').value='';}
+function saveT(e){
+e.preventDefault();
+TEACHERS.push({id:Date.now(),name:$('tN').value.trim(),cat:$('tCat').value,skill:$('tSk').value.trim(),bio:$('tBio').value.trim(),birth:'—',place:'—',profession:'—',years:'—',tel:'—',email:'—',avail:'Da definire',rating:5.0,hours:10});
+e.target.reset(); fillTeachers(); alert('Docente salvato nel catalogo!'); go('docenti'); return false;
+}
+function openBP(){showM('bpModal');}
+function closeBP(){hideM('bpModal');$('bpImg').classList.remove('z2');$('bpImg').classList.add('cursor-zoom-in');}
+function toggleZoomBP(){
+const i=$('bpImg'); const z=i.classList.toggle('z2');
+i.classList.toggle('cursor-zoom-in',!z); i.classList.toggle('cursor-zoom-out',z);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideM('tModal');hideM('delModal');closeBP();}});
+
+/* ---------- INIT ---------- */
+function fillTeachers(){
+$('bTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.id}">${t.name} - ${t.skill}</option>`).join('');
+}
+fillTeachers(); updateNav(); renderT(); renderProj(); renderCal(); renderSlots(); renderDash();
+</script>
 </body>
 </html>

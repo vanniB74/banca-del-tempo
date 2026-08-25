@@ -1,0 +1,19 @@
+
+<!-- ===== DOCENTI ===== -->
+<section id="docenti" class="tc space-y-6">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 dark:border-slate-700 pb-4">
+<div><h2 class="text-2xl font-bold dark:text-white">Catalogo Docenti &amp; Mentori</h2><p class="text-sm text-slate-500">Clicca su una scheda per vedere l'anagrafica completa.</p></div>
+<select id="fCat" onchange="renderT()" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm dark:text-white outline-none"><option value="ALL">Tutte le Aree</option><option value="Pratica">Mestieri Pratici</option><option value="Teorica">Materie Teoriche</option></select>
+</div>
+<div id="tList" class="grid md:grid-cols-2 gap-6"></div>
+</section>
+
+<!-- ===== PROGETTI ===== -->
+<section id="progetti" class="tc space-y-6">
+<div class="text-center"><h2 class="text-2xl font-bold dark:text-white">Progetti Comunitari</h2><p class="text-sm text-slate-500">Iniziative che utilizzano le risorse umane formate con questo programma di inclusione sociale.</p></div>
+<div class="w-full rounded-2xl overflow-hidden shadow-lg h-56 sm:h-80 relative border border-slate-200 dark:border-slate-700">
+<img src="assets/img2.jpg" alt="Gratitudine e comunità" class="w-full h-full object-cover">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6"><div><h3 class="text-white font-bold text-2xl">La comunità cresce insieme</h3><p class="text-slate-200 text-sm mt-1">I progetti nati dalle competenze trasmesse dai nostri docenti.</p></div></div>
+</div>
+<div id="projList" class="grid md:grid-cols-2 gap-4"></div>
+</section>

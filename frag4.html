@@ -1,0 +1,102 @@
+
+<script>
+const $=id=>document.getElementById(id);
+const LSP='bdt_profile', LSB='bdt_bookings', LSU='bdt_hours';
+const MASTER_CODE='ACLIMASTER2026';
+let userHours=parseInt(localStorage.getItem(LSU))||12;
+if(isNaN(userHours))userHours=12;
+let bookings=[]; try{bookings=JSON.parse(localStorage.getItem(LSB)||'[]')}catch(e){bookings=[]}
+const getProfile=()=>{try{return JSON.parse(localStorage.getItem(LSP))}catch(e){return null}};
+
+/* ---------- DATI DOCENTI (anagrafica completa) ---------- */
+const TEACHERS=[
+{id:1,name:'Antonio Capitano',cat:'Pratica',skill:'Potatura Olivi & Agricoltura',bio:'Ex agronomo e agricoltore con oltre 42 anni di lavoro nei campi pugliesi. Accreditato ACLI per la trasmissione delle tecniche tradizionali di coltivazione e potatura.',birth:'12/03/1955',place:'Ruvo di Puglia (BA)',profession:'Agronomo / Agricoltore',years:42,tel:'333 1234567',email:'a.capitano@banca tempo.it',avail:'Lun - Ven 09:00-13:00',rating:4.9,hours:25},
+{id:2,name:'Prof.ssa Maria Altamura',cat:'Teorica',skill:'Matematica & Fisica',bio:'Insegnante di liceo in pensione. Ha dedicato 38 anni all\'insegnamento scolastico e offre supporto ai giovani per recuperi e approfondimenti.',birth:'25/07/1958',place:'Bari (BA)',profession:'Insegnante di Liceo',years:38,tel:'333 2345678',email:'m.altamura@banca tempo.it',avail:'Mar - Gio 15:00-18:00',rating:5.0,hours:18},
+{id:3,name:'Giuseppe De Santis',cat:'Pratica',skill:'Officina Meccanica',bio:'Ex meccanico di auto e macchine agricole. 45 anni di officina, trasmissione pratica della manutenzione e della diagnosi dei guasti.',birth:'02/11/1950',place:'Modugno (BA)',profession:'Meccanico',years:45,tel:'333 3456789',email:'g.desantis@bancatempo.it',avail:'Lun - Sab 09:00-12:00',rating:4.8,hours:30},
+{id:4,name:'Rosa Ferrara',cat:'Teorica',skill:'Italiano per Stranieri',bio:'Ex docente di lettere con specializzazione in italiano L2. Supporta l\'inclusione linguistica dei cittadini extracomunitari.',birth:'18/05/1962',place:'Molfetta (BA)',profession:'Docente di Lettere',years:30,tel:'333 4567890',email:'r.ferrara@bancatempo.it',avail:'Lun - Mer 16:00-19:00',rating:4.9,hours:20},
+{id:5,name:'Franco Palmisano',cat:'Pratica',skill:'Cucina & Igiene Alimentare',bio:'Ex cuoco professionista e titolare diattività ristorativa. Insegna cucina tradizionale pugliese e HACCP di base.',birth:'30/09/1953',place:'Bari (BA)',profession:'Cuoco / Ristoratore',years:35,tel:'333 5678901',email:'f.palmisano@bancatempo.it',avail:'Gio - Ven 15:00-18:00',rating:4.7,hours:15},
+{id:6,name:'Lucia Milella',cat:'Teorica',skill:'Musica & Video Creazione',bio:'Ex maestra di musica e appassionata di video making. Insegna basi musicali, montaggio video digitale e creazione di contenuti multimediali.',birth:'14/02/1960',place:'Trani (BA)',profession:'Maestra di Musica',years:28,tel:'333 6789012',email:'l.milella@bancatempo.it',avail:'Mer - Ven 10:00-13:00',rating:5.0,hours:22}
+];
+
+/* ---------- PROGETTI COMUNITARI ---------- */
+const PROJECTS=[
+{title:'Orto Condiviso di Ceglie',promoter:'ACLI + Comune di Ceglie del Campo',res:'3 docenti Agricoltura - 12 allievi formati',period:'Marzo 2025 - Ottobre 2025',status:'Attivo',desc:'Recupero di un terreno comunale coltivato dagli allievi formati dai docenti agricoltori della Banca del Tempo. Prodotti devoluti alle famiglie in difficoltà.'},
+{title:'Doposcuola Ponte Nuovo',promoter:'ACLI Gioventù',res:'2 docenti Teoriche - 20 ragazzi',period:'Settembre 2025 - Giugno 2026',status:'Attivo',desc:'Sportello di supporto allo studio pomeridiano tenuto da docenti in pensione per ragazzi delle scuole medie del quartiere.'},
+{title:'Cucine del Mondo',promoter:'Caritas Diocesana + ACLI',res:'1 docente Cucina - 15 allievi extracomunitari',period:'Gennaio 2025 - Maggio 2025',status:'Concluso',desc:'Corso di cucina e igiene alimentare per cittadini extracomunitari, con rilascio di attestato utile all\'inserimento lavorativo nella ristorazione.'},
+{title:'Mani in Officina',promoter:'Laboratorio ACLI Bari',res:'1 docente Meccanica - 8 allievi',period:'Novembre 2026 - previsto',status:'In partenza',desc:'Percorso pratico di manutenzione bici e motorini per giovani del territorio, guidato dal nostro docente di officicina meccanica.'},
+{title:'Note Inclusive',promoter:'Corale ACLI Ceglie',res:'1 docente Musica & Video - 10 allievi',period:'Ottobre 2026 - previsto',status:'In partenza',desc:'Corso di basi musicali e creazione video per documentare le attività della comunità, aperto a giovani e pensionati.'}
+];
+
+/* ---------- NAVIGAZIONE / UI ---------- */
+function go(t){
+document.querySelectorAll('.tc').forEach(e=>e.classList.remove('on'));
+const el=$(t); if(el)el.classList.add('on');
+window.scrollTo({top:0});
+if(t==='docenti')renderT();
+if(t==='dashboard')renderDash();
+if(t==='prenota')renderCal();
+if(t==='progetti')renderProj();
+if(t==='registrazione')checkReg();
+if(t==='impostazioni')renderProf();
+}
+function tdk(){
+document.documentElement.classList.toggle('dark');
+const i=$('tIco'); if(i)i.classList.toggle('fa-sun');
+}
+function hideM(id){const m=$(id);m.classList.add('hidden');m.classList.remove('flex');}
+function showM(id){const m=$(id);m.classList.remove('hidden');m.classList.add('flex');}
+
+/* ---------- I18N (nav + titoli principali) ---------- */
+const DICT={
+en:{'Chi Siamo':'About Us','Missione':'Mission','Docenti':'Teachers','Progetti':'Projects','Prenota Ore':'Book Hours','Dashboard':'Dashboard','Donazioni':'Donations','Registrati':'Sign Up','Profilo':'Profile','Admin':'Admin','Registrati Ora':'Sign Up Now','Esplora Docenti':'Explore Teachers','Scopri la Missione':'Discover the Mission','Blueprint':'Blueprint','Catalogo Docenti & Mentori':'Teachers & Mentors Catalog','Progetti Comunitari':'Community Projects','Prenota Ore - Calendario':'Book Hours - Calendar','Dashboard & Ore':'Dashboard & Hours','Il Mio Profilo':'My Profile','Sostieni la Banca del Tempo':'Support the Time Bank'},
+de:{'Chi Siamo':'Über Uns','Missione':'Mission','Docenti':'Lehrer','Progetti':'Projekte','Prenota Ore':'Stunden buchen','Dashboard':'Dashboard','Donazioni':'Spenden','Registrati':'Registrieren','Profilo':'Profil','Admin':'Admin','Registrati Ora':'Jetzt registrieren','Esplora Docenti':'Lehrer entdecken','Scopri la Missione':'Mission entdecken','Blueprint':'Blueprint','Catalogo Docenti & Mentori':'Katalog der Lehrer','Progetti Comunitari':'Gemeinschaftsprojekte','Prenota Ore - Kalender':'Stunden buchen - Kalender','Dashboard & Ore':'Dashboard & Stunden','Il Mio Profilo':'Mein Profil','Sostieni la Banca del Tempo':'Unterstützen Sie die Zeitbank'}
+};
+function sL(){
+const L=$('lS').value;
+document.querySelectorAll('button,h1,h2,h3').forEach(el=>{
+const t=el.textContent.trim();
+if(el.dataset.orig===undefined)el.dataset.orig=t;
+const src=el.dataset.orig;
+if(L==='it'){if(el.dataset.t!==undefined){el.textContent=el.dataset.t;}}
+else{const tr=DICT[L][src];if(tr){if(el.dataset.t===undefined)el.dataset.t=t;el.textContent=tr;}}
+});
+}
+function renderT(){
+const cat=$('fCat').value, list=$('tList');
+list.innerHTML='';
+TEACHERS.filter(t=>cat==='ALL'||t.cat===cat).forEach(t=>{
+list.innerHTML+=`<div onclick="openT(${t.id})" class="cursor-pointer bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-3 hover:shadow-lg hover:border-blue-300 transition">
+<div class="flex justify-between items-start">
+<div><span class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 text-xs font-bold px-2.5 py-0.5 rounded-full">${t.skill}</span>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mt-1">${t.name}</h3>
+<p class="text-xs text-slate-400 mt-0.5"><i class="fa-solid fa-briefcase mr-1"></i>${t.profession} - ${t.years} anni</p></div>
+<span class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold px-2 py-1 rounded-md border border-emerald-200 dark:border-emerald-800 shrink-0"><i class="fa-solid fa-shield-halved mr-1"></i>Verificato ACLI</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${t.bio}</p>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
+<span class="text-sm text-amber-500"><i class="fa-solid fa-star"></i> <strong class="text-slate-800 dark:text-slate-200">${t.rating}</strong></span>
+<span class="text-xs text-slate-500">Disponibilità: <strong>${t.avail}</strong> (${t.hours} ore)</span>
+</div></div>`;
+});
+}
+function openT(id){
+const t=TEACHERS.find(x=>x.id===id); if(!t)return;
+$('tModalTitle').textContent=t.name;
+const row=(l,v)=>`<div class="flex justify-between gap-3 py-1.5 border-b dark:border-slate-700 text-sm"><span class="text-slate-400">${l}</span><span class="font-semibold dark:text-slate-200 text-right">${v}</span></div>`;
+$('tModalBody').innerHTML=`<span class="inline-block bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 text-xs font-bold px-2.5 py-0.5 rounded-full">${t.skill}</span>
+${row('Data di Nascita',t.birth)}${row('Luogo di Nascita',t.place)}${row('Ex Professione',t.profession)}${row('Anni di Esperienza',t.years)}${row('Telefono',t.tel)}${row('Email',t.email)}${row('Disponibilità',t.avail)}${row('Ore Disponibili',t.hours)}${row('Categoria',t.cat==='Pratica'?'Mestiere Pratico':'Materia Teorica')}
+<p class="text-sm text-slate-600 dark:text-slate-300 pt-2">${t.bio}</p>`;
+showM('tModal');
+}
+function renderProj(){
+const badges={'Attivo':'bg-emerald-100 text-emerald-800 border-emerald-200','Concluso':'bg-slate-100 text-slate-600 border-slate-200','In partenza':'bg-amber-100 text-amber-800 border-amber-200'};
+$('projList').innerHTML=PROJECTS.map(p=>`<div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold dark:text-white">${p.title}</h3><span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${badges[p.status]}">${p.status}</span></div>
+<p class="text-sm text-slate-600 dark:text-slate-400">${p.desc}</p>
+<div class="text-xs text-slate-500 pt-2 border-t dark:border-slate-700 space-y-1">
+<p><i class="fa-solid fa-building mr-1 text-blue-500"></i><strong>Ente:</strong> ${p.promoter}</p>
+<p><i class="fa-solid fa-users mr-1 text-emerald-500"></i><strong>Risorse:</strong> ${p.res}</p>
+<p><i class="fa-solid fa-calendar mr-1 text-amber-500"></i><strong>Periodo:</strong> ${p.period}</p>
+</div></div>`).join('');
+}
+</script>

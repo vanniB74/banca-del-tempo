@@ -1,0 +1,83 @@
+
+<!-- ===== PRENOTA ORE (CALENDARIO) ===== -->
+<section id="prenota" class="tc space-y-6">
+<h2 class="text-2xl font-bold dark:text-white">Prenota Ore - Calendario</h2>
+<p class="text-sm text-slate-500 -mt-4">Seleziona una data, una fascia oraria libera e conferma.</p>
+<div class="grid lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 space-y-4">
+<div class="flex justify-between items-center">
+<button onclick="calNav(-1)" class="bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition"><i class="fa-solid fa-chevron-left"></i></button>
+<h3 id="calTitle" class="font-bold text-lg dark:text-white"></h3>
+<button onclick="calNav(1)" class="bg-slate-200 dark:bg-slate-700 px-3 py-1 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase">
+<div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div class="text-red-400">Dom</div>
+</div>
+<div id="calGrid" class="grid grid-cols-7 gap-1"></div>
+<div class="flex flex-wrap gap-4 text-[11px] text-slate-500 pt-2 border-t dark:border-slate-700">
+<span><span class="inline-block w-3 h-3 rounded bg-blue-600 mr-1"></span>Selezionato</span>
+<span><span class="inline-block w-3 h-3 rounded bg-amber-400 mr-1"></span>Oggi</span>
+<span><span class="inline-block w-3 h-3 rounded bg-red-200 mr-1"></span>Non disponibile</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 space-y-4 h-fit">
+<h4 class="font-bold dark:text-white">Riepilogo</h4>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Docente</label><select id="bTeacher" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></select></div>
+<div id="slotsArea" class="space-y-2 hidden"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fasce Orarie</label><div id="slotsList" class="grid grid-cols-2 gap-2"></div></div>
+<div id="bookSummary" class="hidden space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-sm">
+<p id="bsDate" class="font-semibold dark:text-blue-300"></p>
+<p id="bsSlot" class="dark:text-slate-300"></p>
+<p id="bsTeacher" class="dark:text-slate-300"></p>
+<button onclick="confirmCalBook()" class="w-full bg-blue-900 text-white font-bold py-2.5 rounded-xl hover:bg-blue-800 transition mt-2"><i class="fa-solid fa-check mr-1"></i> Conferma Prenotazione</button>
+</div>
+<p id="noDayHint" class="text-xs text-slate-400">Scegli un giorno nel calendario.</p>
+</div>
+</div>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard" class="tc space-y-6">
+<h2 class="text-2xl font-bold dark:text-white">Dashboard &amp; Ore</h2>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Totale Ore Disponibili</span><div class="text-3xl font-extrabold text-blue-900 dark:text-blue-400 mt-2">340 Ore</div></div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Il Tuo Saldo Tempo</span><div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2" id="uBal"></div></div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"><span class="text-xs font-bold text-slate-400 uppercase">Settore Più Richiesto</span><div class="text-3xl font-extrabold text-amber-600 dark:text-amber-400 mt-2">Agricoltura</div></div>
+</div>
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 space-y-4">
+<h3 class="font-bold text-lg dark:text-white">Le Tue Prenotazioni</h3>
+<div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 uppercase text-xs"><tr><th class="p-3">Docente</th><th class="p-3">Materia</th><th class="p-3">Data</th><th class="p-3">Ora</th><th class="p-3">Stato</th></tr></thead><tbody id="bTable" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody></table></div>
+</div>
+</section>
+
+<!-- ===== DONAZIONI ===== -->
+<section id="donazioni" class="tc max-w-2xl mx-auto space-y-6">
+<div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-center space-y-4">
+<div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-full flex items-center justify-center mx-auto text-2xl"><i class="fa-solid fa-heart"></i></div>
+<h2 class="text-2xl font-bold dark:text-white">Sostieni la Banca del Tempo</h2>
+<p class="text-sm text-slate-600 dark:text-slate-400">La donazione è completamente libera, priva di massimali e NON obbligatoria.</p>
+<form onsubmit="return doDon(event)" class="space-y-4 pt-4 text-left">
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Importo Libero (€)</label><input type="number" min="1" placeholder="10" required class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-amber-500"></div>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome Sostenitore (Opzionale)</label><input type="text" class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-amber-500"></div>
+<button type="submit" class="w-full bg-amber-500 text-blue-950 font-bold py-3 rounded-xl hover:bg-amber-400 transition shadow-md">Invia Donazione Volontaria</button>
+</form></div></section>
+
+<!-- ===== MASTER / ADMIN ===== -->
+<section id="master" class="tc max-w-2xl mx-auto space-y-6">
+<div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md space-y-6">
+<h2 class="text-xl font-bold text-blue-900 dark:text-blue-400">ACLI Admin - Gestione Docenti</h2>
+<div id="mAuth" class="space-y-4">
+<p class="text-sm text-slate-500">Inserisci il Codice di Identificazione Admin per abilitare l'inserimento di nuovi docenti.</p>
+<input type="password" id="mCode" placeholder="Codice Admin" class="w-full p-3 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl outline-none focus:ring-2 focus:ring-blue-900">
+<button onclick="authM()" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition">Autentica Operatore ACLI</button>
+</div>
+<div id="mPanel" class="hidden space-y-4 border-t dark:border-slate-700 pt-6">
+<div class="p-3 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-400 text-xs font-semibold flex items-center justify-between"><span><i class="fa-solid fa-circle-check mr-1"></i> Operatore Autenticato</span><button onclick="logoutM()" class="underline">Esci</button></div>
+<h3 class="font-bold dark:text-white text-lg">Registra Nuovo Docente</h3>
+<form onsubmit="return saveT(event)" class="space-y-3">
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome e Cognome</label><input type="text" id="tN" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></div>
+<div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Area</label><select id="tCat" class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"><option value="Pratica">Pratica</option><option value="Teorica">Teorica</option></select></div><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Specializzazione</label><input type="text" id="tSk" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></div></div>
+<div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Biografia</label><textarea id="tBio" rows="3" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none"></textarea></div>
+<button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition">+ Salva Docente</button>
+</form></div></div></section>
+
+</main>

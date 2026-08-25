@@ -1,0 +1,150 @@
+
+<script>
+/* ---------- REGISTRAZIONE ---------- */
+let editing=false;
+$('phI').addEventListener('change',e=>{
+const f=e.target.files[0]; if(!f)return;
+if(f.size>2*1024*1024){alert('Foto troppo grande (max 2MB).');return;}
+const r=new FileReader();
+r.onload=ev=>{$('phP').src=ev.target.result;$('phP').classList.remove('hidden');$('phH').classList.add('hidden');};
+r.readAsDataURL(f);
+});
+function checkReg(){
+const p=getProfile();
+if(p&&!editing){$('regOk').classList.remove('hidden');$('regF').classList.add('hidden');$('regOkN').textContent='Ciao '+p.nome+' '+p.cog+'! Gestisci i tuoi dati dal profilo.';}
+else{$('regOk').classList.add('hidden');$('regF').classList.remove('hidden');}
+}
+$('regF').addEventListener('submit',e=>{
+e.preventDefault();
+const p={nome:$('rNome').value.trim(),cog:$('rCog').value.trim(),dn:$('rDN').value,ln:$('rLN').value.trim(),sesso:$('rSesso').value,cf:$('rCF').value.trim().toUpperCase(),via:$('rVia').value.trim(),civ:$('rCiv').value.trim(),cap:$('rCap').value.trim(),com:$('rCom').value.trim(),prov:$('rProv').value,tel:$('rTel').value.trim(),email:$('rEmail').value.trim(),cat:$('rCat').value,comp:$('rComp').value.trim(),note:$('rNote').value.trim(),photo:$('phP').classList.contains('hidden')?'':$('phP').src,dt:new Date().toISOString()};
+localStorage.setItem(LSP,JSON.stringify(p));
+editing=false; updateNav();
+alert('Registrazione completata con successo! Benvenuto nella Banca del Tempo.');
+$('regF').reset(); $('phP').classList.add('hidden'); $('phH').classList.remove('hidden');
+go('impostazioni');
+});
+function editProf(){
+const p=getProfile(); if(!p)return;
+editing=true;
+$('rNome').value=p.nome||'';$('rCog').value=p.cog||'';$('rDN').value=p.dn||'';$('rLN').value=p.ln||'';$('rSesso').value=p.sesso||'';$('rCF').value=p.cf||'';$('rVia').value=p.via||'';$('rCiv').value=p.civ||'';$('rCap').value=p.cap||'';$('rCom').value=p.com||'';$('rProv').value=p.prov||'';$('rTel').value=p.tel||'';$('rEmail').value=p.email||'';$('rCat').value=p.cat||'';$('rComp').value=p.comp||'';$('rNote').value=p.note||'';
+if(p.photo){$('phP').src=p.photo;$('phP').classList.remove('hidden');$('phH').classList.add('hidden');}
+go('registrazione'); window.scrollTo({top:0});
+}
+function renderProf(){
+const p=getProfile();
+if(!p){$('noProf').classList.remove('hidden');$('profCard').classList.add('hidden');return;}
+$('noProf').classList.add('hidden');$('profCard').classList.remove('hidden');
+$('pPhoto').src=p.photo||'assets/logo.jpg';
+$('pName').textContent=p.nome+' '+p.cog;
+$('pCat').textContent='Categoria: '+({giovane:'Giovane',pensionato:'Pensionato',extracomunitario:'Extracomunitario',altro:'Altro'}[p.cat]||p.cat);
+$('pCF').textContent='CF: '+p.cf;
+const row=(l,v)=>`<div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg px-3 py-2"><p class="text-[10px] font-bold text-slate-400 uppercase">${l}</p><p class="text-sm font-semibold dark:text-slate-200">${v||'—'}</p></div>`;
+const dt=p.dn?new Date(p.dn).toLocaleDateString('it-IT'):'—';
+$('pDetails').innerHTML=row('Data di Nascita',dt)+row('Luogo di Nascita',p.ln)+row('Sesso',p.sesso==='M'?'Maschile':p.sesso==='F'?'Femminile':'—')+row('Indirizzo',p.via+' '+p.civ+', '+p.cap+' '+p.com+' ('+p.prov+')')+row('Telefono',p.tel)+row('Email',p.email)+row('Competenze di Interesse',p.comp)+row('Note',p.note)+row('Iscritto dal',new Date(p.dt).toLocaleDateString('it-IT'))+row('Saldo Ore',userHours+' ore');
+}
+function openDel(){showM('delModal');}
+function confirmDel(){
+localStorage.removeItem(LSP);localStorage.removeItem(LSB);localStorage.removeItem(LSU);
+bookings=[];userHours=12;editing=false;
+hideM('delModal');updateNav();renderDash();
+alert('Iscrizione cancellata. Tutti i dati sono stati eliminati.');
+go('landing');
+}
+function updateNav(){
+const p=getProfile();
+$('navR').classList.toggle('hidden',!!p);
+$('navP').classList.toggle('hidden',!p);
+}
+
+/* ---------- CALENDARIO ---------- */
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const SLOTS=['09:00-10:00','10:00-11:00','11:00-12:00','15:00-16:00','16:00-17:00','17:00-18:00'];
+const today=new Date(); today.setHours(0,0,0,0);
+let calY=today.getFullYear(), calM=today.getMonth(), selDate=null, selSlot=null;
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function calNav(n){calM+=n; if(calM<0){calM=11;calY--;} if(calM>11){calM=0;calY++;} selDate=null;selSlot=null;renderCal();renderSlots();}
+function renderCal(){
+$('calTitle').textContent=MESI[calM]+' '+calY;
+const first=new Date(calY,calM,1), off=(first.getDay()+6)%7, dim=new Date(calY,calM+1,0).getDate();
+let h='';
+for(let i=0;i<off;i++)h+='<div></div>';
+for(let d=1;d<=dim;d++){
+const dt=new Date(calY,calM,d), s=iso(dt);
+const isPast=dt<today, isSun=dt.getDay()===0, isTod=dt.getTime()===today.getTime();
+let cls='cd bg-slate-100 dark:bg-slate-700 dark:text-slate-200';
+if(isPast||isSun)cls+=' dis';
+if(isSun)cls+=' text-red-400';
+if(isTod)cls+=' tod';
+if(selDate===s)cls+=' sel';
+h+=`<div class="${cls}" onclick="selDay('${s}')">${d}</div>`;
+}
+$('calGrid').innerHTML=h;
+}
+function selDay(s){selDate=s;selSlot=null;renderCal();renderSlots();}
+function renderSlots(){
+if(!selDate){$('slotsArea').classList.add('hidden');$('bookSummary').classList.add('hidden');$('noDayHint').classList.remove('hidden');return;}
+$('slotsArea').classList.remove('hidden');$('noDayHint').classList.add('hidden');
+$('slotsList').innerHTML=SLOTS.map(s=>{
+const taken=bookings.some(b=>b.date===selDate&&b.slot===s);
+const sel=selSlot===s;
+let cls=taken?'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 cursor-not-allowed line-through':sel?'bg-blue-900 text-white border-blue-900':'bg-slate-100 dark:bg-slate-700 dark:text-slate-200 hover:bg-blue-100 dark:hover:bg-slate-600';
+return `<button ${taken?'disabled':''} onclick="selSlotF('${s}')" class="text-xs font-bold px-2 py-2.5 rounded-lg border border-transparent transition ${cls}">${s}</button>`;
+}).join('');
+$('bookSummary').classList.toggle('hidden',!selSlot);
+if(selSlot){
+const t=TEACHERS.find(x=>x.id==$('bTeacher').value);
+const d=new Date(selDate+'T12:00:00');
+$('bsDate').innerHTML='<i class="fa-regular fa-calendar mr-1"></i>'+d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+$('bsSlot').innerHTML='<i class="fa-regular fa-clock mr-1"></i>'+selSlot+' (1 ora)';
+$('bsTeacher').innerHTML='<i class="fa-solid fa-chalkboard-user mr-1"></i>'+(t?t.name:'—')+(t?' - '+t.skill:'');
+}
+}
+function selSlotF(s){selSlot=s;renderSlots();}
+function confirmCalBook(){
+if(!selDate||!selSlot){alert('Seleziona prima una data e una fascia oraria.');return;}
+const t=TEACHERS.find(x=>x.id==$('bTeacher').value);
+if(!t){alert('Seleziona un docente.');return;}
+if(userHours<1){alert('Saldo ore esaurito. Dona o partecipa per accumulare ore!');return;}
+bookings.push({date:selDate,slot:selSlot,teacher:t.name,skill:t.skill,hours:1});
+userHours--; localStorage.setItem(LSB,JSON.stringify(bookings)); localStorage.setItem(LSU,userHours);
+selDate=null;selSlot=null;renderCal();renderSlots();renderDash();
+alert('Prenotazione confermata con '+t.name+'!');
+go('dashboard');
+}
+function renderDash(){
+$('uBal').textContent=userHours+' Ore';
+if(!bookings.length){$('bTable').innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400 text-sm">Nessuna prenotazione. Vai alla sezione Prenota!</td></tr>';return;}
+$('bTable').innerHTML=bookings.map(b=>{
+const d=new Date(b.date+'T12:00:00').toLocaleDateString('it-IT');
+return `<tr class="dark:text-slate-200"><td class="p-3 font-semibold">${b.teacher}</td><td class="p-3 text-slate-500 dark:text-slate-400">${b.skill}</td><td class="p-3">${d}</td><td class="p-3 font-bold text-blue-900 dark:text-blue-400">${b.slot}</td><td class="p-3"><span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full">Confermata</span></td></tr>`;
+}).join('');
+}
+
+/* ---------- DONAZIONI / ADMIN / BLUEPRINT ---------- */
+function doDon(e){e.preventDefault();e.target.reset();alert('Grazie! La tua donazione volontaria è stata registrata.');return false;}
+function authM(){
+if($('mCode').value===MASTER_CODE){$('mAuth').classList.add('hidden');$('mPanel').classList.remove('hidden');}
+else{alert('Codice non valido.');$('mCode').value='';}
+}
+function logoutM(){$('mAuth').classList.remove('hidden');$('mPanel').classList.add('hidden');$('mCode').value='';}
+function saveT(e){
+e.preventDefault();
+TEACHERS.push({id:Date.now(),name:$('tN').value.trim(),cat:$('tCat').value,skill:$('tSk').value.trim(),bio:$('tBio').value.trim(),birth:'—',place:'—',profession:'—',years:'—',tel:'—',email:'—',avail:'Da definire',rating:5.0,hours:10});
+e.target.reset(); fillTeachers(); alert('Docente salvato nel catalogo!'); go('docenti'); return false;
+}
+function openBP(){showM('bpModal');}
+function closeBP(){hideM('bpModal');$('bpImg').classList.remove('z2');$('bpImg').classList.add('cursor-zoom-in');}
+function toggleZoomBP(){
+const i=$('bpImg'); const z=i.classList.toggle('z2');
+i.classList.toggle('cursor-zoom-in',!z); i.classList.toggle('cursor-zoom-out',z);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideM('tModal');hideM('delModal');closeBP();}});
+
+/* ---------- INIT ---------- */
+function fillTeachers(){
+$('bTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.id}">${t.name} - ${t.skill}</option>`).join('');
+}
+fillTeachers(); updateNav(); renderT(); renderProj(); renderCal(); renderSlots(); renderDash();
+</script>
+</body>
+</html>
