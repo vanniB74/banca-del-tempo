@@ -58,7 +58,7 @@ A('<div class="bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-slate-800 
 A('<div class="space-y-4 max-w-2xl">')
 A('<span class="bg-amber-500 text-blue-950 text-xs font-bold px-3 py-1 rounded-full uppercase">Scambio Intergenerazionale</span>')
 A('<h2 class="text-3xl sm:text-4xl font-extrabold leading-tight">Colleghiamo la memoria e il futuro a Bari</h2>')
-A('<p class="text-blue-100">La Banca del Tempo permette ai pensionati di mettere a disposizione la propria esperienza per giovani, extracomunitari e tutta la comunit&agrave;.</p>')
+A('<p class="text-blue-100">La Banca del Tempo permette ai pensionati di mettere a disposizione la propria esperienza per giovani, extracomunitari e tutta la comunità.</p>')
 A('<div class="pt-2 flex flex-wrap gap-3">')
 A('<button onclick="go(\'registrazione\')" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-emerald-500 transition shadow-lg">Registrati Ora</button>')
 A('<button onclick="go(\'docenti\')" class="bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-400 transition">Esplora Docenti</button>')
@@ -91,10 +91,10 @@ A('<section id="missione" class="tc space-y-8">')
 A('<div class="text-center max-w-3xl mx-auto space-y-3"><span class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-full uppercase">Inclusione Sociale</span><h2 class="text-3xl font-extrabold dark:text-white">Lo Scopo del Nostro Programma</h2></div>')
 A('<div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 border border-blue-100 dark:border-slate-700 space-y-5 text-slate-700 dark:text-slate-300 leading-relaxed">')
 for p in [
-    'La <strong>Banca del Tempo ACLI</strong> &egrave; un programma di <strong>inclusione sociale</strong> ideato per <strong>reinserire attivamente nella comunit&agrave;</strong> i cittadini che hanno terminato il proprio percorso lavorativo e sono andati in pensione.',
+    'La <strong>Banca del Tempo ACLI</strong> è un programma di <strong>inclusione sociale</strong> ideato per <strong>reinserire attivamente nella comunità</strong> i cittadini che hanno terminato il proprio percorso lavorativo e sono andati in pensione.',
     'Molti pensionati possiedono competenze preziose acquisite in decenni di lavoro. La Banca del Tempo trasforma questa esperienza in una <strong>risorsa viva</strong> per il territorio, creando un ponte tra generazioni.',
     'Il programma si rivolge ai <strong>giovani</strong> in cerca di orientamento, alle <strong>persone extracomunitarie</strong> di condizione economica non agiata che necessitano di competenze professionali, e a <strong>tutti i cittadini</strong> che desiderano imparare o insegnare.',
-    'La Banca del Tempo &egrave; <strong>aperta a tutti</strong>: italiani e stranieri, giovani e anziani, studenti e lavoratori. Nessuna barriera di et&agrave;, nazionalit&agrave; o condizione economica. L\'unico requisito &egrave; la volont&agrave; di partecipare.'
+    'La Banca del Tempo è <strong>aperta a tutti</strong>: italiani e stranieri, giovani e anziani, studenti e lavoratori. Nessuna barriera di età, nazionalità o condizione economica. L\'unico requisito è la volontà di partecipare.'
 ]: A(f'<p>{p}</p>')
 A('</div>')
 A('<div class="grid sm:grid-cols-3 gap-4">')
@@ -111,7 +111,7 @@ print('Sections 1-2 done:', len(W))
 # ===== REGISTRAZIONE =====
 A('<section id="registrazione" class="tc max-w-3xl mx-auto space-y-6">')
 A('<div class="text-center"><h2 class="text-2xl font-bold dark:text-white">Registrazione alla Banca del Tempo</h2><p class="text-sm text-slate-500">Compila tutti i campi per iscriverti gratuitamente.</p></div>')
-A('<div id="regOk" class="hidden bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 text-center space-y-3"><i class="fa-solid fa-circle-check text-emerald-500 text-4xl"></i><h3 class="font-bold text-emerald-800 dark:text-emerald-400 text-lg">Sei gi&agrave; registrato!</h3><p class="text-sm text-slate-600 dark:text-slate-400" id="regOkN"></p><button onclick="go(\'impostazioni\')" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-800 transition mt-2">Vai al Profilo</button></div>')
+A('<div id="regOk" class="hidden bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 text-center space-y-3"><i class="fa-solid fa-circle-check text-emerald-500 text-4xl"></i><h3 class="font-bold text-emerald-800 dark:text-emerald-400 text-lg">Sei già registrato!</h3><p class="text-sm text-slate-600 dark:text-slate-400" id="regOkN"></p><button onclick="go(\'impostazioni\')" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-800 transition mt-2">Vai al Profilo</button></div>')
 A('<form id="regF" class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-5">')
 # Photo
 A('<div class="flex flex-col items-center gap-3"><img id="phP" class="pp hidden"><div id="phH" class="w-28 h-28 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-3xl text-slate-400"><i class="fa-solid fa-camera"></i></div><label class="cursor-pointer bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-bold px-4 py-2 rounded-xl hover:bg-blue-200 transition"><i class="fa-solid fa-upload mr-1"></i> Carica Foto<input type="file" id="phI" accept="image/*" class="hidden"></label></div>')
@@ -132,4 +132,4 @@ A('<div><select id="rProv" required class="w-full p-2.5 border dark:border-slate
 for p in ['BA','FI','MI','RM','NA','TO','PA','BO','GE','VE','PD','CT','CA','BR','LE','TA','FG','BT']: A(f'<option value="{p}">{p}</option>')
 A('</select></div></div></div>')
 # Contatti
-A('<div class="grid sm:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefono *</label><input type="tel" id="rTel" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div><div><label class=
+A('<div class="grid sm:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefono *</label><input type="tel" id="rTel" required class="w-full p-2.5 border dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"></div>')
